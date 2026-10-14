@@ -54,6 +54,13 @@ The project uses the following third-party libraries or assets
 - **License**: New BSD License
 - **License Link**: https://github.com/BitMiracle/libtiff.net/blob/master/license.txt
 
+### ExcelDataReader
+
+- **Source**: https://github.com/ExcelDataReader/ExcelDataReader
+- **Version**: 3.9.0
+- **License**: MIT License
+- **License Link**: https://github.com/ExcelDataReader/ExcelDataReader/blob/develop/LICENSE
+
 ### Pfim
 
 - **Source**: https://github.com/nickbabcock/Pfim

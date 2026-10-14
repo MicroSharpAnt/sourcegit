@@ -1105,4 +1105,9 @@
   <x:String x:Key="Text.Worktree.Remove" xml:space="preserve">移除工作树</x:String>
   <x:String x:Key="Text.Worktree.Unlock" xml:space="preserve">解除工作树锁定</x:String>
   <x:String x:Key="Text.Yes" xml:space="preserve">好的</x:String>
+  <x:String x:Key="Text.TablePreview.Title">表格预览</x:String>
+  <x:String x:Key="Text.TablePreview.Raw">原文</x:String>
+  <x:String x:Key="Text.TablePreview.Truncated">预览已截断：每张表最多 10,000 行、256 列；总计最多 500,000 个单元格、64 张表。</x:String>
+  <x:String x:Key="Text.TablePreview.Empty">空工作表</x:String>
+  <x:String x:Key="Text.TablePreview.ValuesOnly">仅显示已保存的单元格值，不重新计算公式。</x:String>
 </ResourceDictionary>

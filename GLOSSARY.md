@@ -9,3 +9,5 @@ Git repository browsing and local history editing.
 **Squash (压缩提交)**: Replace consecutive commits on the current branch with one commit containing their combined changes and a chosen message.
 
 **Recovery reference (恢复引用)**: A named reference retaining the branch's original tip before history is rewritten.
+
+**Table preview (表格预览)**: A read-only view of one file version as rows and columns, distinct from comparing changes between versions.

@@ -94,71 +94,94 @@ namespace SourceGit.ViewModels
                 return;
             }
 
+            var revision = _revision;
+            var file = _file;
             Task.Run(async () =>
             {
-                var objs = await new Commands.QueryRevisionObjects(_repo, _revision.SHA, _file)
+                if (Models.TablePreview.Supports(file))
+                {
+                    var source = new Models.DiffOption(revision);
+                    var preview = await Commands.QueryTablePreview.LoadAsync(_repo, source.PreviewPath, source.PreviewRevision).ConfigureAwait(false);
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (_revision == revision && !_viewMode.IsDiff)
+                            ViewContent = new FileHistoriesRevisionFile(file, preview, revision.Change.Index != Models.ChangeState.Deleted);
+                    });
+                    return;
+                }
+
+                var objs = await new Commands.QueryRevisionObjects(_repo, revision.SHA, file)
                     .GetResultAsync()
                     .ConfigureAwait(false);
 
                 if (objs.Count == 0)
                 {
-                    Dispatcher.UIThread.Post(() => ViewContent = new FileHistoriesRevisionFile(_file));
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (_revision == revision && !_viewMode.IsDiff)
+                            ViewContent = new FileHistoriesRevisionFile(file);
+                    });
                     return;
                 }
 
-                var revisionContent = await GetRevisionFileContentAsync(objs[0]).ConfigureAwait(false);
-                Dispatcher.UIThread.Post(() => ViewContent = revisionContent);
+                var revisionContent = await GetRevisionFileContentAsync(objs[0], revision).ConfigureAwait(false);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (_revision == revision && !_viewMode.IsDiff)
+                        ViewContent = revisionContent;
+                });
             });
         }
 
-        private async Task<object> GetRevisionFileContentAsync(Models.Object obj)
+        private async Task<object> GetRevisionFileContentAsync(Models.Object obj, Models.FileVersion revision)
         {
+            var file = revision.Path;
             if (obj.Type == Models.ObjectType.Blob)
             {
-                var isBinary = await new Commands.IsBinary(_repo, _revision.SHA, _file).GetResultAsync().ConfigureAwait(false);
+                var isBinary = await new Commands.IsBinary(_repo, revision.SHA, file).GetResultAsync().ConfigureAwait(false);
                 if (isBinary)
                 {
-                    var imgDecoder = ImageSource.GetDecoder(_file);
+                    var imgDecoder = ImageSource.GetDecoder(file);
                     if (imgDecoder != Models.ImageDecoder.None)
                     {
-                        var source = await ImageSource.FromRevisionAsync(_repo, _revision.SHA, _file, imgDecoder).ConfigureAwait(false);
-                        var image = new Models.RevisionImageFile(_file, source.Bitmap, source.Size);
-                        return new FileHistoriesRevisionFile(_file, image, true);
+                        var source = await ImageSource.FromRevisionAsync(_repo, revision.SHA, file, imgDecoder).ConfigureAwait(false);
+                        var image = new Models.RevisionImageFile(file, source.Bitmap, source.Size);
+                        return new FileHistoriesRevisionFile(file, image, true);
                     }
 
-                    var size = await new Commands.QueryFileSize(_repo, _file, _revision.SHA).GetResultAsync().ConfigureAwait(false);
-                    var binaryFile = new Models.RevisionBinaryFile(_repo, _file, _revision.SHA, size);
-                    return new FileHistoriesRevisionFile(_file, binaryFile, true);
+                    var size = await new Commands.QueryFileSize(_repo, file, revision.SHA).GetResultAsync().ConfigureAwait(false);
+                    var binaryFile = new Models.RevisionBinaryFile(_repo, file, revision.SHA, size);
+                    return new FileHistoriesRevisionFile(file, binaryFile, true);
                 }
 
-                await using var contentStream = await Commands.QueryFileContent.RunAsync(_repo, _revision.SHA, _file).ConfigureAwait(false);
+                await using var contentStream = await Commands.QueryFileContent.RunAsync(_repo, revision.SHA, file).ConfigureAwait(false);
                 var content = await new StreamReader(contentStream).ReadToEndAsync();
                 var lfs = Models.LFSObject.Parse(content);
                 if (lfs != null)
                 {
-                    var imgDecoder = ImageSource.GetDecoder(_file);
+                    var imgDecoder = ImageSource.GetDecoder(file);
                     if (imgDecoder != Models.ImageDecoder.None)
                     {
-                        var combined = new RevisionLFSImage(_repo, _file, lfs, imgDecoder);
-                        return new FileHistoriesRevisionFile(_file, combined, true);
+                        var combined = new RevisionLFSImage(_repo, file, lfs, imgDecoder);
+                        return new FileHistoriesRevisionFile(file, combined, true);
                     }
 
                     var rlfs = new Models.RevisionLFSObject() { Object = lfs };
-                    return new FileHistoriesRevisionFile(_file, rlfs, true);
+                    return new FileHistoriesRevisionFile(file, rlfs, true);
                 }
 
                 var txt = new Models.RevisionTextFile() { FileName = obj.Path, Content = content };
-                return new FileHistoriesRevisionFile(_file, txt, true);
+                return new FileHistoriesRevisionFile(file, txt, true);
             }
 
             if (obj.Type == Models.ObjectType.Commit)
             {
-                var submoduleRoot = Path.Combine(_repo, _file).Replace('\\', '/').TrimEnd('/');
+                var submoduleRoot = Path.Combine(_repo, file).Replace('\\', '/').TrimEnd('/');
                 var module = await new Commands.QuerySubmoduleRevision(submoduleRoot, obj.SHA).GetResultAsync().ConfigureAwait(false);
-                return new FileHistoriesRevisionFile(_file, module);
+                return new FileHistoriesRevisionFile(file, module);
             }
 
-            return new FileHistoriesRevisionFile(_file);
+            return new FileHistoriesRevisionFile(file);
         }
 
         private string _repo = null;

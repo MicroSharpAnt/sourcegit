@@ -12,6 +12,10 @@ namespace SourceGit.Models
         public string Path => _path;
         public string OrgPath => _orgPath;
 
+        // Preview a single file version. null revision = working tree, empty = index.
+        public string PreviewPath { get; private set; }
+        public string PreviewRevision { get; private set; }
+
         /// <summary>
         ///     Only used for working copy changes
         /// </summary>
@@ -22,6 +26,10 @@ namespace SourceGit.Models
             _isUnstaged = isUnstaged;
             _path = change.Path;
             _orgPath = change.OriginalPath;
+            var deleted = (isUnstaged ? change.WorkTree : change.Index) == ChangeState.Deleted;
+            PreviewPath = deleted && !isUnstaged && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
+            PreviewRevision = isUnstaged ? (deleted ? string.Empty : null) :
+                (deleted ? change.DataForAmend?.ParentSHA ?? "HEAD" : string.Empty);
 
             if (isUnstaged)
             {
@@ -50,6 +58,8 @@ namespace SourceGit.Models
         /// <param name="change"></param>
         public DiffOption(Commit commit, Change change)
         {
+            PreviewPath = change.Index == ChangeState.Deleted && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
+            PreviewRevision = change.Index == ChangeState.Deleted ? commit.FirstParentToCompare : commit.SHA;
             _revisions.Add(commit.FirstParentToCompare);
             _revisions.Add(commit.SHA);
             _path = change.Path;
@@ -62,6 +72,8 @@ namespace SourceGit.Models
         /// <param name="ver"></param>
         public DiffOption(FileVersion ver)
         {
+            PreviewPath = ver.Path;
+            PreviewRevision = ver.Change.Index == ChangeState.Deleted ? $"{ver.SHA}^" : ver.SHA;
             if (string.IsNullOrEmpty(ver.OriginalPath))
             {
                 _revisions.Add(ver.HasParent ? $"{ver.SHA}^" : EmptyTreeHash.Guess(ver.SHA));
@@ -85,6 +97,8 @@ namespace SourceGit.Models
         /// <param name="end"></param>
         public DiffOption(FileVersion start, FileVersion end)
         {
+            PreviewPath = end.Change.Index == ChangeState.Deleted ? start.Path : end.Path;
+            PreviewRevision = end.Change.Index == ChangeState.Deleted ? start.SHA : end.SHA;
             if (start.Change.Index == ChangeState.Deleted)
             {
                 _revisions.Add(EmptyTreeHash.Guess(end.SHA));
@@ -121,6 +135,10 @@ namespace SourceGit.Models
         /// <param name="change"></param>
         public DiffOption(string baseRevision, string targetRevision, Change change)
         {
+            var deleted = change.Index == ChangeState.Deleted;
+            PreviewPath = deleted && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
+            var revision = deleted ? baseRevision : targetRevision;
+            PreviewRevision = string.IsNullOrEmpty(revision) ? null : revision;
             _revisions.Add(string.IsNullOrEmpty(baseRevision) ? "-R" : baseRevision);
             _revisions.Add(targetRevision);
             _path = change.Path;

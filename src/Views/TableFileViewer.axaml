@@ -1,0 +1,21 @@
+<v:ChromelessWindow xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="using:SourceGit.Views"
+                    xmlns:vm="using:SourceGit.ViewModels"
+                    x:Class="SourceGit.Views.TableFileViewer"
+                    x:Name="ThisControl"
+                    x:DataType="vm:TableFileViewer"
+                    Icon="/App.ico" Title="{DynamicResource Text.TablePreview.Title}"
+                    Width="1000" Height="650" MinWidth="600" MinHeight="400"
+                    WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Grid Height="28" IsVisible="{Binding !#ThisControl.UseSystemWindowFrame}">
+      <Border Background="{DynamicResource Brush.TitleBar}" PointerPressed="BeginMoveWindow" DoubleTapped="MaximizeOrRestoreWindow"/>
+      <TextBlock Text="{DynamicResource Text.TablePreview.Title}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+      <v:CaptionButtons HorizontalAlignment="Right" IsVisible="{OnPlatform True, macOS=False}"/>
+    </Grid>
+    <TextBlock Grid.Row="1" Margin="8" Text="{Binding File}" ToolTip.Tip="{Binding Source}" TextTrimming="CharacterEllipsis"/>
+    <v:TablePreviewView Grid.Row="2" DataContext="{Binding Content}"/>
+    <v:LoadingIcon Grid.Row="2" Width="64" Height="64" IsVisible="{Binding IsLoading}"/>
+  </Grid>
+</v:ChromelessWindow>

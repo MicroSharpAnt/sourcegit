@@ -9,6 +9,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SourceGit.Views.RevisionFileContentViewer">
   <UserControl.DataTemplates>
+    <DataTemplate DataType="m:TablePreview">
+      <v:TablePreviewView/>
+    </DataTemplate>
+
     <DataTemplate DataType="m:RevisionBinaryFile">
       <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Path Width="64" Height="64" Data="{StaticResource Icons.Binary}" Fill="{DynamicResource Brush.FG2}"/>

@@ -91,6 +91,13 @@ namespace SourceGit.Views
             }
         }
 
+        private async void OnOpenTablePreview(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModels.DiffContext context)
+                await this.ShowDialogAsync(context.CreateTablePreview());
+            e.Handled = true;
+        }
+
         private async void OnOpenBinaryFileViewer(object sender, RoutedEventArgs e)
         {
             if (sender is Button { DataContext: Models.BinaryDiff diff } && diff.NewSize > 0)

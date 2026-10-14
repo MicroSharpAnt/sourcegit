@@ -12,6 +12,9 @@ SourceGit.Native.OS.GitExecutable = OperatingSystem.IsWindows() ? "git.exe" : "g
 SourceGit.Native.OS.CredentialHelper = string.Empty;
 Environment.SetEnvironmentVariable("GIT_CONFIG_GLOBAL", System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sourcegit-tests-no-global-config"));
 Environment.SetEnvironmentVariable("GIT_CONFIG_NOSYSTEM", "1");
+await TablePreviewTests.RunAsync();
+if (args.Contains("--table-preview"))
+    return;
 using var repo = new TestRepository();
 var root = repo.Commit("root", "root.txt", "root");
 var b = repo.Commit("B", "b.txt", "B");

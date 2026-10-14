@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -678,6 +678,15 @@ namespace SourceGit.ViewModels
 
         private async Task SetViewingBlobAsync(Models.Object file)
         {
+            if (Models.TablePreview.Supports(file.Path))
+            {
+                var revision = _commit.SHA;
+                var preview = await Commands.QueryTablePreview.LoadAsync(_repo.FullPath, file.Path, revision);
+                if (_commit?.SHA == revision && ViewRevisionFilePath == file.Path)
+                    ViewRevisionFileContent = preview;
+                return;
+            }
+
             var isBinary = await new Commands.IsBinary(_repo.FullPath, _commit.SHA, file.Path).GetResultAsync();
             if (isBinary)
             {
