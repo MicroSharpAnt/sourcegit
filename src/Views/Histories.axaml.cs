@@ -911,6 +911,35 @@ namespace SourceGit.Views
 
             if (!repo.IsBare)
             {
+                var squash = new MenuItem();
+                squash.Header = App.Text("SquashCommits");
+                squash.Icon = this.CreateMenuIcon("Icons.SquashIntoParent");
+                squash.Click += async (_, e) =>
+                {
+                    e.Handled = true;
+                    if (!repo.CanCreatePopup())
+                        return;
+
+                    var operation = new Commands.SquashCommits(repo.FullPath);
+                    var hashes = selected.ConvertAll(x => x.SHA);
+                    try
+                    {
+                        if (!await operation.PrepareAsync(hashes))
+                        {
+                            repo.SendNotification(App.Text(operation.Error) + "\n" + operation.GitError, true);
+                            return;
+                        }
+
+                        if (repo.CanCreatePopup())
+                            repo.ShowPopup(new ViewModels.SquashCommits(repo, operation));
+                    }
+                    catch (Exception ex)
+                    {
+                        repo.SendNotification(ex.Message, true);
+                    }
+                };
+                menu.Items.Add(squash);
+
                 if (canCherryPick)
                 {
                     var cherryPick = new MenuItem();

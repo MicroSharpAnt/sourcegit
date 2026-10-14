@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:m="using:SourceGit.Models"
+             xmlns:vm="using:SourceGit.ViewModels"
+             xmlns:c="using:SourceGit.Converters"
+             x:Class="SourceGit.Views.SquashCommits"
+             x:DataType="vm:SquashCommits">
+  <StackPanel Margin="8,0" Spacing="12">
+    <StackPanel Orientation="Horizontal" Spacing="8">
+      <Path Width="16" Height="16" Data="{StaticResource Icons.SquashIntoParent}"/>
+      <TextBlock FontSize="18" Classes="bold" Text="{DynamicResource Text.SquashCommits}"/>
+    </StackPanel>
+
+    <TextBlock Text="{DynamicResource Text.SquashCommits.Targets}"/>
+    <ListBox ItemsSource="{Binding Commits}" MaxHeight="130"
+             Background="{DynamicResource Brush.Contents}"
+             BorderBrush="{DynamicResource Brush.Border2}" BorderThickness="1"
+             CornerRadius="4" Padding="4"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="m:Commit">
+          <Grid ColumnDefinitions="Auto,*">
+            <TextBlock Grid.Column="0" Margin="0,0,8,0" Foreground="DarkOrange"
+                       FontFamily="{DynamicResource Fonts.Monospace}"
+                       Text="{Binding SHA, Converter={x:Static c:StringConverters.ToShortSHA}}"/>
+            <TextBlock Grid.Column="1" Text="{Binding Subject}" TextTrimming="CharacterEllipsis"/>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <TextBlock Text="{DynamicResource Text.SquashCommits.Message}"/>
+    <TextBox Text="{Binding Message, Mode=TwoWay}" AcceptsReturn="True"
+             TextWrapping="Wrap" Height="150"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+    <TextBlock Text="{DynamicResource Text.SquashCommits.Warning}" TextWrapping="Wrap"
+               Foreground="{DynamicResource Brush.FG2}"/>
+  </StackPanel>
+</UserControl>

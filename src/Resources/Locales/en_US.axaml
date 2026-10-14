@@ -930,6 +930,19 @@
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">Public Key</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Title" xml:space="preserve">SSH Key Helper</x:String>
   <x:String x:Key="Text.Start" xml:space="preserve">START</x:String>
+  <x:String x:Key="Text.SquashCommits" xml:space="preserve">Squash Commits</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Changed" xml:space="preserve">The current branch or HEAD changed. Close this popup and select the commits again.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Detached" xml:space="preserve">Check out a local branch before squashing commits.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Dirty" xml:space="preserve">Commit or discard local changes, including untracked files, before squashing.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Git" xml:space="preserve">Unable to prepare or execute squash. See the Git error below.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.InProgress" xml:space="preserve">Finish or abort the current Git operation before squashing.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Merge" xml:space="preserve">Merge commits between the selection and HEAD are not supported.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Message" xml:space="preserve">Enter a non-empty commit message.</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Selection" xml:space="preserve">Select at least two consecutive, non-root commits on the current branch.</x:String>
+  <x:String x:Key="Text.SquashCommits.Message" xml:space="preserve">Combined commit message:</x:String>
+  <x:String x:Key="Text.SquashCommits.Recovery" xml:space="preserve">Original history saved at {0}. You can create a branch from it to recover the original commits.</x:String>
+  <x:String x:Key="Text.SquashCommits.Targets" xml:space="preserve">Selected commits (oldest first):</x:String>
+  <x:String x:Key="Text.SquashCommits.Warning" xml:space="preserve">This rewrites the selected commits and later commits on this branch. If already pushed, updating the remote requires a coordinated force push; nothing is pushed automatically. A sourcegit-backup branch will preserve the original history.</x:String>
   <x:String x:Key="Text.Stash" xml:space="preserve">Stash</x:String>
   <x:String x:Key="Text.Stash.IncludeUntracked" xml:space="preserve">Include untracked files</x:String>
   <x:String x:Key="Text.Stash.Message" xml:space="preserve">Message:</x:String>

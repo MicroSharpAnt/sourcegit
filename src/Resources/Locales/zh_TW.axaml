@@ -934,6 +934,19 @@
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">公開金鑰</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Title" xml:space="preserve">SSH 金鑰工具</x:String>
   <x:String x:Key="Text.Start" xml:space="preserve">開  始</x:String>
+  <x:String x:Key="Text.SquashCommits" xml:space="preserve">壓縮提交</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Changed" xml:space="preserve">目前分支或頂端提交已變更。請關閉視窗，重新選擇提交。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Detached" xml:space="preserve">請先簽出本機分支，再壓縮提交；不支援游離 HEAD。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Dirty" xml:space="preserve">工作區存在未提交變更或未追蹤檔案。請先提交或處理這些變更，再壓縮提交。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Git" xml:space="preserve">無法準備或執行壓縮提交，請查看下方 Git 錯誤。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.InProgress" xml:space="preserve">請先完成或中止目前 Git 操作，再壓縮提交。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Merge" xml:space="preserve">選取範圍到目前分支頂端之間包含合併提交，暫不支援壓縮。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Message" xml:space="preserve">請輸入非空的提交訊息。</x:String>
+  <x:String x:Key="Text.SquashCommits.Error.Selection" xml:space="preserve">請選擇目前分支上至少兩條連續的一般提交，且不能包含根提交。</x:String>
+  <x:String x:Key="Text.SquashCommits.Message" xml:space="preserve">合併後的提交訊息：</x:String>
+  <x:String x:Key="Text.SquashCommits.Recovery" xml:space="preserve">原歷史已儲存於 {0}，可從該參照簽出或建立分支以恢復原提交。</x:String>
+  <x:String x:Key="Text.SquashCommits.Targets" xml:space="preserve">選取的提交（由舊到新）：</x:String>
+  <x:String x:Key="Text.SquashCommits.Warning" xml:space="preserve">此操作會改寫所選提交及其後的提交。若已推送，後續需要與協作者協調強制推送；本次不會自動推送。執行前會建立 sourcegit-backup 備份分支，保留原歷史。</x:String>
   <x:String x:Key="Text.Stash" xml:space="preserve">擱置變更 (stash)</x:String>
   <x:String x:Key="Text.Stash.IncludeUntracked" xml:space="preserve">包含未追蹤的檔案</x:String>
   <x:String x:Key="Text.Stash.Message" xml:space="preserve">擱置變更訊息:</x:String>
