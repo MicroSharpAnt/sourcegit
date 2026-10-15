@@ -1,0 +1,55 @@
+<v:ChromelessWindow xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="using:SourceGit.Views" xmlns:vm="using:SourceGit.ViewModels"
+                    x:Class="SourceGit.Views.TableDiffWindow" x:Name="ThisControl"
+                    x:DataType="vm:TableDiffWindow" Icon="/App.ico"
+                    Title="{DynamicResource Text.TableDiff.Title}" Width="1200" Height="760"
+                    MinWidth="800" MinHeight="480" WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+    <Grid Height="28" IsVisible="{Binding !#ThisControl.UseSystemWindowFrame}">
+      <Border Background="{DynamicResource Brush.TitleBar}" PointerPressed="BeginMoveWindow" DoubleTapped="MaximizeOrRestoreWindow"/>
+      <TextBlock Text="{DynamicResource Text.TableDiff.Title}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+      <v:CaptionButtons HorizontalAlignment="Right" IsVisible="{OnPlatform True, macOS=False}"/>
+    </Grid>
+    <TextBlock Grid.Row="1" Margin="8,6" Text="{Binding File}" TextTrimming="CharacterEllipsis"/>
+    <ListBox Grid.Row="2" Margin="8,0" Background="Transparent" ItemsSource="{Binding SheetLabels}"
+             SelectedIndex="{Binding SheetIndex, Mode=TwoWay}"
+             ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+      <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ListBox.ItemsPanel>
+    </ListBox>
+    <Grid Grid.Row="3" Margin="8,4" ColumnDefinitions="Auto,*,Auto">
+      <TextBlock Text="{DynamicResource Text.TableDiff.Key}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+      <ListBox Grid.Column="1" MaxWidth="480" HorizontalAlignment="Left" Background="Transparent"
+               ItemsSource="{Binding Keys}" SelectedIndex="{Binding KeyIndex, Mode=TwoWay}"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ListBox.ItemsPanel>
+      </ListBox>
+      <CheckBox Grid.Column="2" Content="{DynamicResource Text.TableDiff.OnlyChanges}" IsChecked="{Binding OnlyChanges, Mode=TwoWay}"/>
+    </Grid>
+    <StackPanel Grid.Row="4" Margin="8,0,8,6" Spacing="4">
+      <TextBlock Text="{Binding Summary}"/>
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <TextBlock Text="{DynamicResource Text.TableDiff.Added}" Foreground="Green"/>
+        <TextBlock Text="{DynamicResource Text.TableDiff.Deleted}" Foreground="IndianRed"/>
+        <TextBlock Text="{DynamicResource Text.TableDiff.Modified}" Foreground="DarkGoldenrod"/>
+        <TextBlock Text="{DynamicResource Text.TableDiff.Values}" Foreground="{DynamicResource Brush.FG2}"/>
+      </StackPanel>
+      <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" Foreground="IndianRed"/>
+      <TextBlock Text="{Binding Warning}" IsVisible="{Binding Warning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap"/>
+    </StackPanel>
+    <Grid Grid.Row="5" ColumnDefinitions="*,1,*" RowDefinitions="Auto,*">
+      <StackPanel Margin="8,2,8,6">
+        <TextBlock Text="{DynamicResource Text.Diff.Old}" FontWeight="Bold"/>
+        <TextBlock Text="{Binding OldSource}" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding OldSource}"/>
+      </StackPanel>
+      <Border Grid.Column="1" Grid.RowSpan="2" Background="{DynamicResource Brush.Border2}"/>
+      <StackPanel Grid.Column="2" Margin="8,2,8,6">
+        <TextBlock Text="{DynamicResource Text.Diff.New}" FontWeight="Bold"/>
+        <TextBlock Text="{Binding NewSource}" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding NewSource}"/>
+      </StackPanel>
+      <v:TableDiffGrid x:Name="OldGrid" Grid.Row="1" ItemsSource="{Binding Rows}"/>
+      <v:TableDiffGrid x:Name="NewGrid" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding Rows}"/>
+    </Grid>
+    <v:LoadingIcon Grid.Row="5" Width="64" Height="64" IsVisible="{Binding IsLoading}"/>
+  </Grid>
+</v:ChromelessWindow>

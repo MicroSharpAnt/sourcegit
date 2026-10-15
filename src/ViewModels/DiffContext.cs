@@ -10,6 +10,8 @@ namespace SourceGit.ViewModels
     {
         public bool CanPreviewTable => Models.TablePreview.Supports(_option.PreviewPath);
 
+        public TableDiffWindow CreateTableDiff() => new(_repo, _option);
+
         public TableFileViewer CreateTablePreview() => new(_repo, _option.PreviewPath, _option.PreviewRevision);
 
         public string Title

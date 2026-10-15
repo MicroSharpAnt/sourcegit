@@ -13,6 +13,9 @@ namespace SourceGit.Models
         public string OrgPath => _orgPath;
 
         // Preview a single file version. null revision = working tree, empty = index.
+        public TableFileSource TableOld { get; private set; }
+        public TableFileSource TableNew { get; private set; }
+
         public string PreviewPath { get; private set; }
         public string PreviewRevision { get; private set; }
 
@@ -26,7 +29,11 @@ namespace SourceGit.Models
             _isUnstaged = isUnstaged;
             _path = change.Path;
             _orgPath = change.OriginalPath;
-            var deleted = (isUnstaged ? change.WorkTree : change.Index) == ChangeState.Deleted;
+            var state = isUnstaged ? change.WorkTree : change.Index;
+            var deleted = state == ChangeState.Deleted;
+            var oldPath = string.IsNullOrEmpty(change.OriginalPath) || (isUnstaged && change.Index == ChangeState.Renamed) ? change.Path : change.OriginalPath;
+            TableOld = new(oldPath, isUnstaged ? string.Empty : change.DataForAmend?.ParentSHA ?? "HEAD", state is ChangeState.Added or ChangeState.Untracked);
+            TableNew = new(change.Path, isUnstaged ? null : string.Empty, deleted);
             PreviewPath = deleted && !isUnstaged && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
             PreviewRevision = isUnstaged ? (deleted ? string.Empty : null) :
                 (deleted ? change.DataForAmend?.ParentSHA ?? "HEAD" : string.Empty);
@@ -58,6 +65,8 @@ namespace SourceGit.Models
         /// <param name="change"></param>
         public DiffOption(Commit commit, Change change)
         {
+            TableOld = new(string.IsNullOrEmpty(change.OriginalPath) ? change.Path : change.OriginalPath, commit.FirstParentToCompare, change.Index == ChangeState.Added);
+            TableNew = new(change.Path, commit.SHA, change.Index == ChangeState.Deleted);
             PreviewPath = change.Index == ChangeState.Deleted && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
             PreviewRevision = change.Index == ChangeState.Deleted ? commit.FirstParentToCompare : commit.SHA;
             _revisions.Add(commit.FirstParentToCompare);
@@ -72,6 +81,8 @@ namespace SourceGit.Models
         /// <param name="ver"></param>
         public DiffOption(FileVersion ver)
         {
+            TableOld = new(string.IsNullOrEmpty(ver.OriginalPath) ? ver.Path : ver.OriginalPath, $"{ver.SHA}^", !ver.HasParent || ver.Change.Index == ChangeState.Added);
+            TableNew = new(ver.Path, ver.SHA, ver.Change.Index == ChangeState.Deleted);
             PreviewPath = ver.Path;
             PreviewRevision = ver.Change.Index == ChangeState.Deleted ? $"{ver.SHA}^" : ver.SHA;
             if (string.IsNullOrEmpty(ver.OriginalPath))
@@ -97,6 +108,8 @@ namespace SourceGit.Models
         /// <param name="end"></param>
         public DiffOption(FileVersion start, FileVersion end)
         {
+            TableOld = new(start.Path, start.SHA, start.Change.Index == ChangeState.Deleted);
+            TableNew = new(end.Path, end.SHA, end.Change.Index == ChangeState.Deleted);
             PreviewPath = end.Change.Index == ChangeState.Deleted ? start.Path : end.Path;
             PreviewRevision = end.Change.Index == ChangeState.Deleted ? start.SHA : end.SHA;
             if (start.Change.Index == ChangeState.Deleted)
@@ -135,6 +148,8 @@ namespace SourceGit.Models
         /// <param name="change"></param>
         public DiffOption(string baseRevision, string targetRevision, Change change)
         {
+            TableOld = new(string.IsNullOrEmpty(change.OriginalPath) ? change.Path : change.OriginalPath, string.IsNullOrEmpty(baseRevision) ? null : baseRevision, change.Index == ChangeState.Added);
+            TableNew = new(change.Path, string.IsNullOrEmpty(targetRevision) ? null : targetRevision, change.Index == ChangeState.Deleted);
             var deleted = change.Index == ChangeState.Deleted;
             PreviewPath = deleted && !string.IsNullOrEmpty(change.OriginalPath) ? change.OriginalPath : change.Path;
             var revision = deleted ? baseRevision : targetRevision;

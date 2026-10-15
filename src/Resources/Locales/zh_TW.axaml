@@ -1110,4 +1110,23 @@
   <x:String x:Key="Text.TablePreview.Truncated">預覽已截斷：每張表最多 10,000 列、256 欄；總計最多 500,000 個儲存格、64 張表。</x:String>
   <x:String x:Key="Text.TablePreview.Empty">空工作表</x:String>
   <x:String x:Key="Text.TablePreview.ValuesOnly">僅顯示已儲存的儲存格值，不重新計算公式。</x:String>
+  <x:String x:Key="Text.TableDiff.Title">儲存格差異</x:String>
+  <x:String x:Key="Text.TableDiff.Key">關鍵欄：</x:String>
+  <x:String x:Key="Text.TableDiff.Auto">自動</x:String>
+  <x:String x:Key="Text.TableDiff.OnlyChanges">只看差異</x:String>
+  <x:String x:Key="Text.TableDiff.Added">+ 新增</x:String>
+  <x:String x:Key="Text.TableDiff.Deleted">− 刪除</x:String>
+  <x:String x:Key="Text.TableDiff.Modified">~ 修改</x:String>
+  <x:String x:Key="Text.TableDiff.Values">比較已儲存的值；欄按位置對應</x:String>
+  <x:String x:Key="Text.TableDiff.Summary">列變更：新增 {0} / 刪除 {1} / 修改 {2}</x:String>
+  <x:String x:Key="Text.TableDiff.AmbiguousKey">關鍵欄存在空值或重複值，已退回自動對齊。</x:String>
+  <x:String x:Key="Text.TableDiff.AlignmentAmbiguous">存在多種可能的行對齊方式，請選擇唯一關鍵欄以明確對應關係。</x:String>
+  <x:String x:Key="Text.TableDiff.AlignmentLimited">大段變更無法自動對齊，已顯示為刪除／新增列；可選擇唯一關鍵欄。</x:String>
+  <x:String x:Key="Text.TableDiff.Truncated">檔案超過預覽限制，無法提供完整差異對比。</x:String>
+  <x:String x:Key="Text.TableDiff.NoSheets">沒有工作表</x:String>
+  <x:String x:Key="Text.TableDiff.SheetAdded">新增工作表</x:String>
+  <x:String x:Key="Text.TableDiff.SheetDeleted">刪除工作表</x:String>
+  <x:String x:Key="Text.TableDiff.Absent">不存在</x:String>
+  <x:String x:Key="Text.TableDiff.Worktree">工作區</x:String>
+  <x:String x:Key="Text.TableDiff.Index">暫存區</x:String>
 </ResourceDictionary>

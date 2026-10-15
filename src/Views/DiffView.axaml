@@ -58,6 +58,11 @@
           <!-- Toolbar Buttons -->
           <StackPanel Grid.Column="4" Margin="8,0,0,0" Orientation="Horizontal" VerticalAlignment="Center">
             <Button Classes="icon_button" Width="28"
+                    IsVisible="{Binding CanPreviewTable}" ToolTip.Tip="{DynamicResource Text.TableDiff.Title}"
+                    Click="OnOpenTableDiff">
+              <Path Width="12" Height="12" Data="{StaticResource Icons.Layout}"/>
+            </Button>
+            <Button Classes="icon_button" Width="28"
                     IsVisible="{Binding CanPreviewTable}"
                     ToolTip.Tip="{DynamicResource Text.TablePreview.Title}"
                     Click="OnOpenTablePreview">

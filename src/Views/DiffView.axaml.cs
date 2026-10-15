@@ -91,6 +91,13 @@ namespace SourceGit.Views
             }
         }
 
+        private async void OnOpenTableDiff(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModels.DiffContext context)
+                await this.ShowDialogAsync(context.CreateTableDiff());
+            e.Handled = true;
+        }
+
         private async void OnOpenTablePreview(object sender, RoutedEventArgs e)
         {
             if (DataContext is ViewModels.DiffContext context)
