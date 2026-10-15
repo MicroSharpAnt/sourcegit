@@ -28,15 +28,29 @@ namespace SourceGit.Views
             RowHeaderWidth = 64;
             HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
             VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            VerticalScroll += (_, e) => Partner?.SyncScroll(false, e.NewValue);
-            HorizontalScroll += (_, e) => Partner?.SyncScroll(true, e.NewValue);
         }
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
+            if (_vertical != null)
+                _vertical.PropertyChanged -= OnScrollPositionChanged;
+            if (_horizontal != null)
+                _horizontal.PropertyChanged -= OnScrollPositionChanged;
             base.OnApplyTemplate(e);
             _vertical = e.NameScope.Find<ScrollBar>("PART_VerticalScrollbar");
             _horizontal = e.NameScope.Find<ScrollBar>("PART_HorizontalScrollbar");
+            if (_vertical != null)
+                _vertical.PropertyChanged += OnScrollPositionChanged;
+            if (_horizontal != null)
+                _horizontal.PropertyChanged += OnScrollPositionChanged;
+        }
+
+        private void OnScrollPositionChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            // DataGrid's wheel Scroll event reports a delta before layout. The
+            // scrollbar value is the committed offset, including keyboard scrolling.
+            if (e.Property == RangeBase.ValueProperty && !_syncing && sender is ScrollBar bar)
+                Partner?.SyncScroll(bar == _horizontal, bar.Value);
         }
 
         private void SyncScroll(bool horizontal, double value)

@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--table-scroll"))
+{
+    TableScrollTests.Run();
+    return;
+}
+
 // Exercise the same editor entry points that the installed app uses during rebase.
 if (args.Length > 0 && args[0].StartsWith("--rebase-", StringComparison.Ordinal))
 {
