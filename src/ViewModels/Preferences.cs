@@ -223,6 +223,25 @@ namespace SourceGit.ViewModels
             set => SetProperty(ref _displayTimeAsPeriodInHistories, value);
         }
 
+        public bool ShowCsvAsTable
+        {
+            get => _showCsvAsTable;
+            set => SetProperty(ref _showCsvAsTable, value);
+        }
+
+        public bool ShowXlsxAsTable
+        {
+            get => _showXlsxAsTable;
+            set => SetProperty(ref _showXlsxAsTable, value);
+        }
+
+        public bool ShouldDisplayTable(string path) => Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".csv" => ShowCsvAsTable,
+            ".xlsx" => ShowXlsxAsTable,
+            _ => false,
+        };
+
         public bool UseSideBySideDiff
         {
             get => _useSideBySideDiff;
@@ -832,6 +851,8 @@ namespace SourceGit.ViewModels
         private bool _showTagsInGraph = true;
         private bool _useTwoColumnsLayoutInHistories = false;
         private bool _displayTimeAsPeriodInHistories = false;
+        private bool _showCsvAsTable = true;
+        private bool _showXlsxAsTable = true;
         private bool _useSideBySideDiff = false;
         private bool _ignoreWhitespaceChangesInDiff = false;
         private bool _ignoreCRAtEOLInDiff = true;

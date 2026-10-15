@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.IO;
 
@@ -22,6 +23,26 @@ namespace SourceGit.Views
         {
             get => _isDetailsPanelExpanded;
             set => SetAndRaise(IsDetailsPanelExpandedProperty, ref _isDetailsPanelExpanded, value);
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            ViewModels.Preferences.Instance.PropertyChanged += OnTablePreferenceChanged;
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            ViewModels.Preferences.Instance.PropertyChanged -= OnTablePreferenceChanged;
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        private async void OnTablePreferenceChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is not (nameof(ViewModels.Preferences.ShowCsvAsTable) or nameof(ViewModels.Preferences.ShowXlsxAsTable)))
+                return;
+            if (DataContext is ViewModels.CommitDetail vm)
+                await vm.RefreshTablePreviewAsync();
         }
 
         public CommitDetail()

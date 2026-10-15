@@ -57,17 +57,9 @@
 
           <!-- Toolbar Buttons -->
           <StackPanel Grid.Column="4" Margin="8,0,0,0" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Classes="icon_button" Width="28"
-                    IsVisible="{Binding CanPreviewTable}" ToolTip.Tip="{DynamicResource Text.TableDiff.Title}"
-                    Click="OnOpenTableDiff">
-              <Path Width="12" Height="12" Data="{StaticResource Icons.Layout}"/>
-            </Button>
-            <Button Classes="icon_button" Width="28"
-                    IsVisible="{Binding CanPreviewTable}"
-                    ToolTip.Tip="{DynamicResource Text.TablePreview.Title}"
-                    Click="OnOpenTablePreview">
-              <Path Width="12" Height="12" Data="{StaticResource Icons.File.Preview}"/>
-            </Button>
+            <CheckBox Margin="4,0,8,0" IsVisible="{Binding CanPreviewTable}"
+                      Content="{DynamicResource Text.TablePreview.Title}"
+                      IsChecked="{Binding ShowAsTable, Mode=TwoWay}"/>
             <Button x:Name="BtnGotoFirstChange"
                     Classes="icon_button"
                     Width="28"
@@ -238,6 +230,7 @@
       <!-- Diff Contents -->
       <ContentControl Grid.Row="1" Content="{Binding Content}">
         <ContentControl.DataTemplates>
+          <DataTemplate DataType="vm:TableDiffContext"><v:TableDiffView/></DataTemplate>
           <!-- Binary Diff -->
           <DataTemplate DataType="m:BinaryDiff">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center">

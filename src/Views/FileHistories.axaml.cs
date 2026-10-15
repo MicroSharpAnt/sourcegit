@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 using Avalonia;
@@ -11,6 +12,26 @@ namespace SourceGit.Views
 {
     public partial class FileHistories : ChromelessWindow
     {
+        protected override void OnOpened(EventArgs e)
+        {
+            base.OnOpened(e);
+            ViewModels.Preferences.Instance.PropertyChanged += OnTablePreferenceChanged;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            ViewModels.Preferences.Instance.PropertyChanged -= OnTablePreferenceChanged;
+            base.OnClosed(e);
+        }
+
+        private void OnTablePreferenceChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is not (nameof(ViewModels.Preferences.ShowCsvAsTable) or nameof(ViewModels.Preferences.ShowXlsxAsTable)))
+                return;
+            if (DataContext is ViewModels.FileHistories { ViewContent: ViewModels.FileHistoriesSingleRevision single } && !single.IsDiffMode)
+                single.RefreshViewContent();
+        }
+
         public FileHistories()
         {
             InitializeComponent();

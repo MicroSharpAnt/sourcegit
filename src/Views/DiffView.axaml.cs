@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -39,6 +40,7 @@ namespace SourceGit.Views
         protected override void OnLoaded(RoutedEventArgs e)
         {
             base.OnLoaded(e);
+            ViewModels.Preferences.Instance.PropertyChanged += OnPreferencesChanged;
 
             if (DataContext is ViewModels.DiffContext vm)
                 vm.CheckSettings();
@@ -49,7 +51,15 @@ namespace SourceGit.Views
         protected override void OnUnloaded(RoutedEventArgs e)
         {
             base.OnUnloaded(e);
+            ViewModels.Preferences.Instance.PropertyChanged -= OnPreferencesChanged;
             ToggleHotkeyBindings(false);
+        }
+
+        private void OnPreferencesChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(ViewModels.Preferences.ShowCsvAsTable) or nameof(ViewModels.Preferences.ShowXlsxAsTable) &&
+                DataContext is ViewModels.DiffContext vm)
+                vm.CheckSettings();
         }
 
         private void OnGotoFirstChange(object _, RoutedEventArgs e)
@@ -89,20 +99,6 @@ namespace SourceGit.Views
                 var vm = new ViewModels.SubmoduleRevisionCompare(diff);
                 this.ShowWindow(vm);
             }
-        }
-
-        private async void OnOpenTableDiff(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is ViewModels.DiffContext context)
-                await this.ShowDialogAsync(context.CreateTableDiff());
-            e.Handled = true;
-        }
-
-        private async void OnOpenTablePreview(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is ViewModels.DiffContext context)
-                await this.ShowDialogAsync(context.CreateTablePreview());
-            e.Handled = true;
         }
 
         private async void OnOpenBinaryFileViewer(object sender, RoutedEventArgs e)

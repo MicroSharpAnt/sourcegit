@@ -86,8 +86,9 @@ namespace SourceGit.ViewModels
             Native.OS.OpenWithDefaultEditor(tmpFile);
         }
 
-        private void RefreshViewContent()
+        public void RefreshViewContent()
         {
+            var generation = ++_contentGeneration;
             if (_viewMode.IsDiff)
             {
                 ViewContent = new DiffContext(_repo, new(_revision), _viewContent as DiffContext);
@@ -98,13 +99,13 @@ namespace SourceGit.ViewModels
             var file = _file;
             Task.Run(async () =>
             {
-                if (Models.TablePreview.Supports(file))
+                if (Preferences.Instance.ShouldDisplayTable(file))
                 {
                     var source = new Models.DiffOption(revision);
                     var preview = await Commands.QueryTablePreview.LoadAsync(_repo, source.PreviewPath, source.PreviewRevision).ConfigureAwait(false);
                     Dispatcher.UIThread.Post(() =>
                     {
-                        if (_revision == revision && !_viewMode.IsDiff)
+                        if (generation == _contentGeneration && _revision == revision && !_viewMode.IsDiff)
                             ViewContent = new FileHistoriesRevisionFile(file, preview, revision.Change.Index != Models.ChangeState.Deleted);
                     });
                     return;
@@ -118,7 +119,7 @@ namespace SourceGit.ViewModels
                 {
                     Dispatcher.UIThread.Post(() =>
                     {
-                        if (_revision == revision && !_viewMode.IsDiff)
+                        if (generation == _contentGeneration && _revision == revision && !_viewMode.IsDiff)
                             ViewContent = new FileHistoriesRevisionFile(file);
                     });
                     return;
@@ -127,7 +128,7 @@ namespace SourceGit.ViewModels
                 var revisionContent = await GetRevisionFileContentAsync(objs[0], revision).ConfigureAwait(false);
                 Dispatcher.UIThread.Post(() =>
                 {
-                    if (_revision == revision && !_viewMode.IsDiff)
+                    if (generation == _contentGeneration && _revision == revision && !_viewMode.IsDiff)
                         ViewContent = revisionContent;
                 });
             });
@@ -188,6 +189,7 @@ namespace SourceGit.ViewModels
         private string _file = null;
         private Models.FileVersion _revision = null;
         private FileHistoriesSingleRevisionViewMode _viewMode = null;
+        private int _contentGeneration;
         private object _viewContent = null;
     }
 

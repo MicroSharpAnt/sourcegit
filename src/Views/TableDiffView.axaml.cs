@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 
 namespace SourceGit.Views
 {
@@ -59,11 +60,10 @@ namespace SourceGit.Views
         private ScrollBar _horizontal;
     }
 
-    public partial class TableDiffWindow : ChromelessWindow
+    public partial class TableDiffView : UserControl
     {
-        public TableDiffWindow()
+        public TableDiffView()
         {
-            CloseOnESC = true;
             InitializeComponent();
             OldGrid.Partner = NewGrid;
             NewGrid.Partner = OldGrid;
@@ -71,29 +71,52 @@ namespace SourceGit.Views
             NewGrid.LoadingRow += (_, e) => SetRowHeader(e, false);
         }
 
-        protected override async void OnOpened(EventArgs e)
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
-            base.OnOpened(e);
-            if (DataContext is ViewModels.TableDiffWindow vm)
+            base.OnAttachedToVisualTree(e);
+            BindModel();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            ReleaseModel();
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+            if (this.GetVisualRoot() != null)
+                BindModel();
+        }
+
+        private async void BindModel()
+        {
+            if (_model == DataContext)
+                return;
+            ReleaseModel();
+            if (DataContext is ViewModels.TableDiffContext vm)
             {
+                _model = vm;
                 vm.PropertyChanged += OnModelChanged;
                 await vm.LoadAsync();
             }
         }
 
-        protected override void OnClosed(EventArgs e)
+        private void ReleaseModel()
         {
-            if (DataContext is ViewModels.TableDiffWindow vm)
-            {
-                vm.PropertyChanged -= OnModelChanged;
-                vm.Close();
-            }
-            base.OnClosed(e);
+            if (_model == null)
+                return;
+            _model.PropertyChanged -= OnModelChanged;
+            _model.Close();
+            _model = null;
         }
+
+        private ViewModels.TableDiffContext _model;
 
         private void OnModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(ViewModels.TableDiffWindow.Result) || sender is not ViewModels.TableDiffWindow vm)
+            if (e.PropertyName != nameof(ViewModels.TableDiffContext.Result) || sender is not ViewModels.TableDiffContext vm)
                 return;
             BuildColumns(OldGrid, vm.Result?.ColumnCount ?? 0, true);
             BuildColumns(NewGrid, vm.Result?.ColumnCount ?? 0, false);
@@ -116,7 +139,7 @@ namespace SourceGit.Views
                 var column = i;
                 grid.Columns.Add(new DataGridTemplateColumn
                 {
-                    Header = ViewModels.TableDiffWindow.ColumnName(i),
+                    Header = ViewModels.TableDiffContext.ColumnName(i),
                     Width = new DataGridLength(150),
                     CellTemplate = new FuncDataTemplate<Models.TableDiffRow>((row, _) =>
                     {

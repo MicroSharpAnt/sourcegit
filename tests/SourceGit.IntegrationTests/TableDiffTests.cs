@@ -4,6 +4,16 @@ static class TableDiffTests
 {
     public static async Task RunAsync()
     {
+        var preferences = System.Text.Json.JsonSerializer.Deserialize<SourceGit.ViewModels.Preferences>("{}");
+        Check(preferences.ShouldDisplayTable("data.CSV") && preferences.ShouldDisplayTable("data.xlsx"), "existing preferences default both table formats on");
+        preferences.ShowCsvAsTable = false;
+        Check(!preferences.ShouldDisplayTable("data.csv") && preferences.ShouldDisplayTable("data.xlsx"), "CSV switch is independent");
+        preferences.ShowXlsxAsTable = false;
+        preferences.ShowCsvAsTable = true;
+        Check(preferences.ShouldDisplayTable("data.csv") && !preferences.ShouldDisplayTable("data.xlsx") && !preferences.ShouldDisplayTable("data.xls"), "XLSX switch is independent and unsupported formats stay off");
+        var persisted = System.Text.Json.JsonSerializer.Deserialize<SourceGit.ViewModels.Preferences>("{\"ShowCsvAsTable\":false,\"ShowXlsxAsTable\":true}");
+        Check(!persisted.ShowCsvAsTable && persisted.ShowXlsxAsTable, "persisted switches restored independently");
+        Console.WriteLine("PASS: table display defaults, independence and persisted settings");
         var oldSheet = Sheet("Data", ["id", "value"], ["1", "one"], ["2", "two"], ["3", "three"]);
         var newSheet = Sheet("Data", ["id", "value"], ["0", "zero"], ["1", "ONE"], ["3", "three"]);
         var diff = TableDiff.Compare(oldSheet, newSheet);

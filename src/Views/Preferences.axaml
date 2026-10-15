@@ -47,7 +47,7 @@
           <TabItem.Header>
             <TextBlock Classes="tab_header" Text="{DynamicResource Text.Preferences.General}"/>
           </TabItem.Header>
-          <Grid Margin="8" RowDefinitions="32,32,32,32,32,32,32,32,32,32,32,32,Auto" ColumnDefinitions="Auto,*">
+          <Grid Margin="8" RowDefinitions="32,32,32,32,32,32,32,32,32,32,32,32,Auto,32,32" ColumnDefinitions="Auto,*">
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="{DynamicResource Text.Preferences.General.Locale}"
                        HorizontalAlignment="Right"
@@ -181,6 +181,10 @@
                       Content="{DynamicResource Text.Preferences.General.Check4UpdatesOnStartup}"
                       IsVisible="{x:Static s:App.IsCheckForUpdateCommandVisible}"
                       IsChecked="{Binding Check4UpdatesOnStartup, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="13" Grid.Column="1" Content="{DynamicResource Text.Preferences.General.ShowCsvAsTable}"
+                      IsChecked="{Binding ShowCsvAsTable, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="14" Grid.Column="1" Content="{DynamicResource Text.Preferences.General.ShowXlsxAsTable}"
+                      IsChecked="{Binding ShowXlsxAsTable, Mode=TwoWay}"/>
           </Grid>
         </TabItem>
 

@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SourceGit.ViewModels
 {
-    public class TableDiffWindow(string repo, Models.DiffOption option) : ObservableObject
+    public class TableDiffContext(string repo, Models.DiffOption option) : ObservableObject
     {
         public string File => option.Path;
         public string OldSource => Describe(option.TableOld);
@@ -49,14 +49,33 @@ namespace SourceGit.ViewModels
 
         public async Task LoadAsync()
         {
+            _closed = false;
+            IsLoading = true;
+            _sheetIndex = -1;
+            _keyIndex = 0;
+            Sheets = [];
+            Keys = [];
+            Rows = [];
+            Result = null;
+            Summary = string.Empty;
+            Warning = null;
+            Error = null;
+            OnPropertyChanged(nameof(SheetIndex));
+            OnPropertyChanged(nameof(SheetLabels));
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(KeyIndex));
+            var generation = ++_generation;
             var document = await Commands.QueryTableDiff.LoadAsync(repo, option);
-            if (_closed)
+            if (_closed || generation != _generation)
                 return;
             Error = document.IsTruncated ? App.Text("TableDiff.Truncated") : document.Error;
             Sheets = document.Sheets;
             OnPropertyChanged(nameof(SheetLabels));
             if (Sheets.Count > 0)
+            {
+                _sheetIndex = -1;
                 SheetIndex = 0;
+            }
             else
             {
                 Summary = Error == null ? App.Text("TableDiff.NoSheets") : string.Empty;

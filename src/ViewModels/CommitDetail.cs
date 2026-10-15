@@ -676,49 +676,57 @@ namespace SourceGit.ViewModels
             RevisionFileSearchSuggestion = suggestion;
         }
 
+        public Task RefreshTablePreviewAsync()
+        {
+            if (_commit != null && Models.TablePreview.Supports(ViewRevisionFilePath))
+                return SetViewingBlobAsync(new Models.Object { Path = ViewRevisionFilePath, Type = Models.ObjectType.Blob });
+            return Task.CompletedTask;
+        }
+
         private async Task SetViewingBlobAsync(Models.Object file)
         {
-            if (Models.TablePreview.Supports(file.Path))
-            {
-                var revision = _commit.SHA;
-                var preview = await Commands.QueryTablePreview.LoadAsync(_repo.FullPath, file.Path, revision);
-                if (_commit?.SHA == revision && ViewRevisionFilePath == file.Path)
-                    ViewRevisionFileContent = preview;
-                return;
-            }
+            var generation = ++_blobGeneration;
+            var revision = _commit.SHA;
+            var content = await LoadViewingBlobAsync(file, revision);
+            if (generation == _blobGeneration && _commit?.SHA == revision && ViewRevisionFilePath == file.Path)
+                ViewRevisionFileContent = content;
+        }
 
-            var isBinary = await new Commands.IsBinary(_repo.FullPath, _commit.SHA, file.Path).GetResultAsync();
+        private async Task<object> LoadViewingBlobAsync(Models.Object file, string revision)
+        {
+            if (Preferences.Instance.ShouldDisplayTable(file.Path))
+                return await Commands.QueryTablePreview.LoadAsync(_repo.FullPath, file.Path, revision);
+
+            var isBinary = await new Commands.IsBinary(_repo.FullPath, revision, file.Path).GetResultAsync();
             if (isBinary)
             {
                 var imgDecoder = ImageSource.GetDecoder(file.Path);
                 if (imgDecoder != Models.ImageDecoder.None)
                 {
-                    var source = await ImageSource.FromRevisionAsync(_repo.FullPath, _commit.SHA, file.Path, imgDecoder);
-                    ViewRevisionFileContent = new Models.RevisionImageFile(file.Path, source.Bitmap, source.Size);
+                    var source = await ImageSource.FromRevisionAsync(_repo.FullPath, revision, file.Path, imgDecoder);
+                    return new Models.RevisionImageFile(file.Path, source.Bitmap, source.Size);
                 }
                 else
                 {
-                    var size = await new Commands.QueryFileSize(_repo.FullPath, file.Path, _commit.SHA).GetResultAsync();
-                    ViewRevisionFileContent = new Models.RevisionBinaryFile(_repo.FullPath, file.Path, _commit.SHA, size);
+                    var size = await new Commands.QueryFileSize(_repo.FullPath, file.Path, revision).GetResultAsync();
+                    return new Models.RevisionBinaryFile(_repo.FullPath, file.Path, revision, size);
                 }
-
-                return;
             }
 
-            await using var contentStream = await Commands.QueryFileContent.RunAsync(_repo.FullPath, _commit.SHA, file.Path);
+            await using var contentStream = await Commands.QueryFileContent.RunAsync(_repo.FullPath, revision, file.Path);
             var content = await new StreamReader(contentStream).ReadToEndAsync();
             var lfs = Models.LFSObject.Parse(content);
             if (lfs != null)
             {
                 var imgDecoder = ImageSource.GetDecoder(file.Path);
                 if (imgDecoder != Models.ImageDecoder.None)
-                    ViewRevisionFileContent = new RevisionLFSImage(_repo.FullPath, file.Path, lfs, imgDecoder);
+                    return new RevisionLFSImage(_repo.FullPath, file.Path, lfs, imgDecoder);
                 else
-                    ViewRevisionFileContent = new Models.RevisionLFSObject() { Object = lfs };
+                    return new Models.RevisionLFSObject() { Object = lfs };
             }
             else
             {
-                ViewRevisionFileContent = new Models.RevisionTextFile() { FileName = file.Path, Content = content };
+                return new Models.RevisionTextFile() { FileName = file.Path, Content = content };
             }
         }
 
@@ -737,6 +745,7 @@ namespace SourceGit.ViewModels
         [GeneratedRegex(@"`.*?`")]
         private static partial Regex REG_INLINECODE_FORMAT();
 
+        private int _blobGeneration;
         private Repository _repo = null;
         private CommitDetailSharedData _sharedData = null;
         private Models.Commit _commit = null;

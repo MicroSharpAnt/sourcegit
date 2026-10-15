@@ -10,7 +10,18 @@ namespace SourceGit.ViewModels
     {
         public bool CanPreviewTable => Models.TablePreview.Supports(_option.PreviewPath);
 
-        public TableDiffWindow CreateTableDiff() => new(_repo, _option);
+        public bool ShowAsTable
+        {
+            get => Preferences.Instance.ShouldDisplayTable(_option.PreviewPath);
+            set
+            {
+                if (Path.GetExtension(_option.PreviewPath).Equals(".csv", StringComparison.OrdinalIgnoreCase))
+                    Preferences.Instance.ShowCsvAsTable = value;
+                else
+                    Preferences.Instance.ShowXlsxAsTable = value;
+                CheckSettings();
+            }
+        }
 
         public TableFileViewer CreateTablePreview() => new(_repo, _option.PreviewPath, _option.PreviewRevision);
 
@@ -99,6 +110,13 @@ namespace SourceGit.ViewModels
         public void CheckSettings()
         {
             var pref = Preferences.Instance;
+            OnPropertyChanged(nameof(ShowAsTable));
+            if (ShowAsTable != (Content is TableDiffContext))
+            {
+                _info = null;
+                LoadContent();
+                return;
+            }
 
             if (Content is TextDiffContext ctx)
             {
@@ -122,6 +140,15 @@ namespace SourceGit.ViewModels
 
         private void LoadContent()
         {
+            var generation = ++_loadGeneration;
+            if (ShowAsTable)
+            {
+                IsTextDiff = false;
+                IsIgnoreWhitespaceVisible = false;
+                Content = new TableDiffContext(_repo, _option);
+                return;
+            }
+
             if (_option.Path.EndsWith('/'))
             {
                 OldMode = 0;
@@ -144,11 +171,10 @@ namespace SourceGit.ViewModels
                     .ReadAsync()
                     .ConfigureAwait(false);
 
-                var info = new Info(_option, numLines, ignoreWhitespace, latest);
-                if (_info != null && info.IsSame(_info))
+                if (generation != _loadGeneration)
                     return;
 
-                _info = info;
+                var info = new Info(_option, numLines, ignoreWhitespace, latest);
 
                 object rs = null;
                 if (latest.TextDiff is { } textDiff)
@@ -186,6 +212,11 @@ namespace SourceGit.ViewModels
 
                 Dispatcher.UIThread.Post(() =>
                 {
+                    if (generation != _loadGeneration)
+                        return;
+                    if (_info != null && info.IsSame(_info))
+                        return;
+                    _info = info;
                     OldMode = latest.OldMode;
                     NewMode = latest.NewMode;
 
@@ -389,6 +420,7 @@ namespace SourceGit.ViewModels
         private readonly int _entireFileLines = 999999999;
         private readonly string _repo;
         private readonly Models.DiffOption _option = null;
+        private int _loadGeneration;
         private int _oldMode = 0;
         private int _newMode = 0;
         private int _unifiedLines = 4;
