@@ -1,11 +1,17 @@
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Media;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.Data;
 using Avalonia.VisualTree;
 
 namespace SourceGit.Views
@@ -21,7 +27,8 @@ namespace SourceGit.Views
             IsReadOnly = true;
             CanUserSortColumns = false;
             CanUserReorderColumns = false;
-            CanUserResizeColumns = false;
+            CanUserResizeColumns = true;
+            MinColumnWidth = 40;
             HeadersVisibility = DataGridHeadersVisibility.All;
             GridLinesVisibility = DataGridGridLinesVisibility.All;
             RowHeight = 30;
@@ -83,6 +90,9 @@ namespace SourceGit.Views
             NewGrid.Partner = OldGrid;
             OldGrid.LoadingRow += (_, e) => SetRowHeader(e, true);
             NewGrid.LoadingRow += (_, e) => SetRowHeader(e, false);
+            OldGrid.LoadingRow += (_, e) => SetRowHeight(e.Row);
+            NewGrid.LoadingRow += (_, e) => SetRowHeight(e.Row);
+            AddHandler(PointerPressedEvent, OnHeaderPressed, RoutingStrategies.Tunnel);
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -124,16 +134,26 @@ namespace SourceGit.Views
             _model.PropertyChanged -= OnModelChanged;
             _model.Close();
             _model = null;
+            _rowHeights.Clear();
         }
 
         private ViewModels.TableDiffContext _model;
 
         private void OnModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(ViewModels.TableDiffContext.Result) || sender is not ViewModels.TableDiffContext vm)
+            if (sender is not ViewModels.TableDiffContext vm)
                 return;
+            if (e.PropertyName == nameof(ViewModels.TableDiffContext.WrapText))
+            {
+                RefreshRowHeights();
+                return;
+            }
+            if (e.PropertyName != nameof(ViewModels.TableDiffContext.Result))
+                return;
+            _rowHeights.Clear();
             BuildColumns(OldGrid, vm.Result?.ColumnCount ?? 0, true);
             BuildColumns(NewGrid, vm.Result?.ColumnCount ?? 0, false);
+            RefreshRowHeights();
         }
 
         private static void SetRowHeader(DataGridRowEventArgs e, bool old)
@@ -145,13 +165,15 @@ namespace SourceGit.Views
             e.Row.Header = line == 0 ? "—" : $"{marker} {line}";
         }
 
-        private static void BuildColumns(DataGrid grid, int count, bool old)
+        private void BuildColumns(DataGrid grid, int count, bool old)
         {
+            foreach (var previous in grid.Columns)
+                previous.PropertyChanged -= OnColumnChanged;
             grid.Columns.Clear();
             for (var i = 0; i < count; i++)
             {
                 var column = i;
-                grid.Columns.Add(new DataGridTemplateColumn
+                var definition = new DataGridTemplateColumn
                 {
                     Header = ViewModels.TableDiffContext.ColumnName(i),
                     Width = new DataGridLength(150),
@@ -160,23 +182,141 @@ namespace SourceGit.Views
                         var kind = row.Cells[column];
                         var highlight = kind == Models.TableChangeKind.Modified ? _modified :
                             kind == Models.TableChangeKind.Added && !old ? _added : kind == Models.TableChangeKind.Deleted && old ? _deleted : Brushes.Transparent;
+                        var text = new TextBlock
+                        {
+                            Text = Models.TableDiff.Value(old ? row.Old : row.New, column),
+                            Margin = new Thickness(6, 0),
+                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                            TextTrimming = TextTrimming.CharacterEllipsis,
+                        };
+                        text.Bind(TextBlock.TextWrappingProperty, new Binding(nameof(ViewModels.TableDiffContext.WrapText))
+                        {
+                            Source = _model,
+                            Converter = _wrapConverter,
+                        });
                         var cell = new Border
                         {
                             Background = highlight,
-                            Child = new TextBlock
-                            {
-                                Text = Models.TableDiff.Value(old ? row.Old : row.New, column),
-                                Margin = new Thickness(6, 0),
-                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                                TextTrimming = TextTrimming.CharacterEllipsis,
-                            },
+                            Child = text,
                         };
                         ToolTip.SetTip(cell, $"{App.Text("Diff.Old")}: {Models.TableDiff.Value(row.Old, column)}\n{App.Text("Diff.New")}: {Models.TableDiff.Value(row.New, column)}");
                         return cell;
                     }),
-                });
+                };
+                definition.PropertyChanged += OnColumnChanged;
+                grid.Columns.Add(definition);
             }
         }
+
+        private void OnColumnChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (_resizing || e.Property != DataGridColumn.WidthProperty || sender is not DataGridColumn column)
+                return;
+            var index = OldGrid.Columns.IndexOf(column);
+            var partner = NewGrid;
+            if (index < 0)
+            {
+                index = NewGrid.Columns.IndexOf(column);
+                partner = OldGrid;
+            }
+            if (index < 0 || index >= partner.Columns.Count)
+                return;
+            _resizing = true;
+            try { partner.Columns[index].Width = column.Width; }
+            finally { _resizing = false; }
+            RefreshRowHeights();
+        }
+
+        private void OnHeaderPressed(object sender, PointerPressedEventArgs e)
+        {
+            if (e.ClickCount != 2 || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || _model?.Result == null)
+                return;
+            var header = (e.Source as Visual)?.FindAncestorOfType<DataGridColumnHeader>(true);
+            var grid = header?.FindAncestorOfType<TableDiffGrid>();
+            if (grid == null)
+                return;
+            var index = grid.Columns.ToList().FindIndex(c => Equals(c.Header, header.Content));
+            var x = e.GetPosition(header).X;
+            if (x <= 5)
+                index--;
+            else if (x < header.Bounds.Width - 5)
+                return;
+            if (index < 0 || index >= grid.Columns.Count)
+                return;
+            var text = CreateMeasureText(grid);
+            text.Text = grid.Columns[index].Header?.ToString();
+            text.Measure(Size.Infinity);
+            var width = text.DesiredSize.Width + 24;
+            foreach (var row in _model.Result.Rows)
+            {
+                foreach (var values in new[] { row.Old, row.New })
+                {
+                    text.Text = Models.TableDiff.Value(values, index);
+                    text.Measure(Size.Infinity);
+                    width = Math.Max(width, text.DesiredSize.Width + 14);
+                }
+            }
+            grid.Columns[index].Width = new DataGridLength(Math.Max(grid.MinColumnWidth, width));
+            e.Handled = true;
+        }
+
+        private static TextBlock CreateMeasureText(DataGrid grid) => new()
+        {
+            FontFamily = grid.FontFamily,
+            FontSize = grid.FontSize,
+            FontStyle = grid.FontStyle,
+            FontWeight = grid.FontWeight,
+        };
+
+        private void SetRowHeight(DataGridRow container)
+        {
+            if (_model?.WrapText != true || container.DataContext is not Models.TableDiffRow row)
+            {
+                container.Height = 30;
+                return;
+            }
+            if (!_rowHeights.TryGetValue(row, out var height))
+            {
+                height = 30;
+                var text = CreateMeasureText(OldGrid);
+                text.TextWrapping = TextWrapping.Wrap;
+                for (var i = 0; i < OldGrid.Columns.Count; i++)
+                {
+                    var width = Math.Max(1, OldGrid.Columns[i].ActualWidth - 14);
+                    foreach (var values in new[] { row.Old, row.New })
+                    {
+                        text.Text = Models.TableDiff.Value(values, i);
+                        text.Measure(new Size(width, double.PositiveInfinity));
+                        height = Math.Max(height, Math.Ceiling(text.DesiredSize.Height) + 8);
+                    }
+                }
+                _rowHeights[row] = height;
+            }
+            container.Height = height;
+        }
+
+        private void RefreshRowHeights()
+        {
+            _rowHeights.Clear();
+            if (_heightRefreshPending)
+                return;
+            _heightRefreshPending = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _heightRefreshPending = false;
+                OldGrid.RowHeight = NewGrid.RowHeight = double.NaN;
+                foreach (var row in OldGrid.GetVisualDescendants().OfType<DataGridRow>())
+                    SetRowHeight(row);
+                foreach (var row in NewGrid.GetVisualDescendants().OfType<DataGridRow>())
+                    SetRowHeight(row);
+            }, DispatcherPriority.Loaded);
+        }
+
+        private bool _resizing;
+        private bool _heightRefreshPending;
+        private readonly Dictionary<Models.TableDiffRow, double> _rowHeights = new();
+        private static readonly Avalonia.Data.Converters.FuncValueConverter<bool, TextWrapping> _wrapConverter =
+            new(wrap => wrap ? TextWrapping.Wrap : TextWrapping.NoWrap);
 
         private static readonly IBrush _added = new SolidColorBrush(Color.Parse("#4034C759"));
         private static readonly IBrush _deleted = new SolidColorBrush(Color.Parse("#40FF453A"));

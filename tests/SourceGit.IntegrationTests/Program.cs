@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--table-sizing"))
+{
+    TableSizingTests.Run();
+    return;
+}
+
 if (args.Contains("--table-scroll"))
 {
     TableScrollTests.Run();

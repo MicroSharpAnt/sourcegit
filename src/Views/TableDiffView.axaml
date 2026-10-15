@@ -14,7 +14,10 @@
                ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ListBox.ItemsPanel>
       </ListBox>
-      <CheckBox Grid.Column="2" Content="{DynamicResource Text.TableDiff.OnlyChanges}" IsChecked="{Binding OnlyChanges, Mode=TwoWay}"/>
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16">
+        <CheckBox Content="{DynamicResource Text.Diff.ToggleWordWrap}" IsChecked="{Binding WrapText, Mode=TwoWay}"/>
+        <CheckBox Content="{DynamicResource Text.TableDiff.OnlyChanges}" IsChecked="{Binding OnlyChanges, Mode=TwoWay}"/>
+      </StackPanel>
     </Grid>
     <StackPanel Grid.Row="2" Margin="8,0,8,6" Spacing="4">
       <TextBlock Text="{Binding Summary}"/>

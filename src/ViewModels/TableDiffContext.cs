@@ -21,6 +21,7 @@ namespace SourceGit.ViewModels
         public string Summary { get => _summary; private set => SetProperty(ref _summary, value); }
         public Models.TableDiff Result { get => _result; private set => SetProperty(ref _result, value); }
         public List<Models.TableDiffRow> Rows { get => _rows; private set => SetProperty(ref _rows, value); }
+        public bool WrapText { get => _wrapText; set => SetProperty(ref _wrapText, value); }
         public bool OnlyChanges
         {
             get => _onlyChanges;
@@ -149,6 +150,7 @@ namespace SourceGit.ViewModels
         private bool _closed;
         private bool _isLoading = true;
         private bool _onlyChanges;
+        private bool _wrapText;
         private int _sheetIndex = -1;
         private int _keyIndex;
         private int _generation;
