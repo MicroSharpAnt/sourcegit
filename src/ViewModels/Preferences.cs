@@ -223,6 +223,12 @@ namespace SourceGit.ViewModels
             set => SetProperty(ref _displayTimeAsPeriodInHistories, value);
         }
 
+        public bool SwapStagedAndUnstaged
+        {
+            get => _swapStagedAndUnstaged;
+            set => SetProperty(ref _swapStagedAndUnstaged, value);
+        }
+
         public bool ShowCsvAsTable
         {
             get => _showCsvAsTable;
@@ -851,6 +857,7 @@ namespace SourceGit.ViewModels
         private bool _showTagsInGraph = true;
         private bool _useTwoColumnsLayoutInHistories = false;
         private bool _displayTimeAsPeriodInHistories = false;
+        private bool _swapStagedAndUnstaged = false;
         private bool _showCsvAsTable = true;
         private bool _showXlsxAsTable = true;
         private bool _useSideBySideDiff = false;

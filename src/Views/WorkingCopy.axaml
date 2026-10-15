@@ -16,7 +16,22 @@
     </Grid.ColumnDefinitions>
 
     <!-- Left -->
-    <Grid Grid.Column="0" Background="{DynamicResource Brush.Window}">
+    <Grid Grid.Column="0" Background="{DynamicResource Brush.Window}"
+          Classes.swapped="{Binding Source={x:Static vm:Preferences.Instance}, Path=SwapStagedAndUnstaged}">
+      <Grid.Styles>
+        <Style Selector="Grid#UnstagedPanel">
+          <Setter Property="Grid.Row" Value="1"/>
+        </Style>
+        <Style Selector="Grid#StagedPanel">
+          <Setter Property="Grid.Row" Value="3"/>
+        </Style>
+        <Style Selector="Grid.swapped > Grid#UnstagedPanel">
+          <Setter Property="Grid.Row" Value="3"/>
+        </Style>
+        <Style Selector="Grid.swapped > Grid#StagedPanel">
+          <Setter Property="Grid.Row" Value="1"/>
+        </Style>
+      </Grid.Styles>
       <Grid.RowDefinitions>
         <RowDefinition Height="36" MinHeight="36" MaxHeight="36"/>
         <RowDefinition Height="*" MinHeight="100"/>
@@ -81,7 +96,7 @@
       </Border>
 
       <!-- Unstaged -->
-      <Grid Grid.Row="1" RowDefinitions="28,*">
+      <Grid x:Name="UnstagedPanel" RowDefinitions="28,*">
         <!-- Unstaged Toolbar -->
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Brush.Border0}">
           <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto,Auto,Auto">
@@ -164,7 +179,7 @@
                     Focusable="False"/>
 
       <!-- Staged -->
-      <Grid Grid.Row="3" RowDefinitions="27,*">
+      <Grid x:Name="StagedPanel" RowDefinitions="27,*">
         <!-- Staged Toolbar -->
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Brush.Border0}">
           <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto">

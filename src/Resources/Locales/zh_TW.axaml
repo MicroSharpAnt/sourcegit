@@ -1110,6 +1110,7 @@
   <x:String x:Key="Text.TablePreview.Truncated">預覽已截斷：每張表最多 10,000 列、256 欄；總計最多 500,000 個儲存格、64 張表。</x:String>
   <x:String x:Key="Text.TablePreview.Empty">空工作表</x:String>
   <x:String x:Key="Text.TablePreview.ValuesOnly">僅顯示已儲存的儲存格值，不重新計算公式。</x:String>
+  <x:String x:Key="Text.Preferences.General.SwapStagedAndUnstaged">未暫存區域和暫存區域視窗位置互換</x:String>
   <x:String x:Key="Text.Preferences.General.ShowCsvAsTable">CSV 以表格方式顯示</x:String>
   <x:String x:Key="Text.Preferences.General.ShowXlsxAsTable">XLSX 以表格方式顯示</x:String>
   <x:String x:Key="Text.TableDiff.Title">儲存格差異</x:String>
