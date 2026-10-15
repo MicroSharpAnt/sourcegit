@@ -15,3 +15,7 @@ Use the task states in `docs/agents/triage-labels.md` when triaging tasks.
 ### Domain docs
 
 Read `docs/agents/domain.md` when exploring or changing domain behavior.
+
+### Local delivery
+
+For every completed project change or install request, read and follow `.agents/skills/sourcegit-delivery/SKILL.md` before reporting completion.
