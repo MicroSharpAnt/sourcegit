@@ -229,6 +229,12 @@ namespace SourceGit.ViewModels
             set => SetProperty(ref _swapStagedAndUnstaged, value);
         }
 
+        public int MacOSFileManager
+        {
+            get => _macOSFileManager;
+            set => SetProperty(ref _macOSFileManager, value >= 0 && value < Native.MacOSFileManager.Names.Length ? value : 0);
+        }
+
         public bool ShowCsvAsTable
         {
             get => _showCsvAsTable;
@@ -858,6 +864,7 @@ namespace SourceGit.ViewModels
         private bool _useTwoColumnsLayoutInHistories = false;
         private bool _displayTimeAsPeriodInHistories = false;
         private bool _swapStagedAndUnstaged = false;
+        private int _macOSFileManager;
         private bool _showCsvAsTable = true;
         private bool _showXlsxAsTable = true;
         private bool _useSideBySideDiff = false;

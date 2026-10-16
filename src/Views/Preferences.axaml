@@ -47,7 +47,7 @@
           <TabItem.Header>
             <TextBlock Classes="tab_header" Text="{DynamicResource Text.Preferences.General}"/>
           </TabItem.Header>
-          <Grid Margin="8" RowDefinitions="32,32,32,32,32,32,32,32,32,32,32,32,Auto,32,32,32" ColumnDefinitions="Auto,*">
+          <Grid Margin="8" RowDefinitions="32,32,32,32,32,32,32,32,32,32,32,32,Auto,32,32,32,Auto" ColumnDefinitions="Auto,*">
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="{DynamicResource Text.Preferences.General.Locale}"
                        HorizontalAlignment="Right"
@@ -187,6 +187,16 @@
                       IsChecked="{Binding ShowXlsxAsTable, Mode=TwoWay}"/>
             <CheckBox Grid.Row="15" Grid.Column="1" Content="{DynamicResource Text.Preferences.General.SwapStagedAndUnstaged}"
                       IsChecked="{Binding SwapStagedAndUnstaged, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="16" Grid.Column="0" Margin="0,0,16,0" HorizontalAlignment="Right"
+                       Text="{DynamicResource Text.Preferences.General.FileManager}" IsVisible="{OnPlatform False, macOS=True}"/>
+            <ComboBox Grid.Row="16" Grid.Column="1" MinHeight="28" Padding="8,0" HorizontalAlignment="Stretch"
+                      IsVisible="{OnPlatform False, macOS=True}" SelectedIndex="{Binding MacOSFileManager, Mode=TwoWay}">
+              <ComboBox.Items>
+                <x:String>Finder</x:String>
+                <x:String>QSpace</x:String>
+                <x:String>QSpace Pro</x:String>
+              </ComboBox.Items>
+            </ComboBox>
           </Grid>
         </TabItem>
 

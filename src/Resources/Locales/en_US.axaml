@@ -1137,4 +1137,6 @@
   <x:String x:Key="Text.ConflictSource.Patch">Applied stash or patch</x:String>
   <x:String x:Key="Text.ConflictSource.Use">Use {0}</x:String>
   <x:String x:Key="Text.ConflictSource.CurrentContent">Current content</x:String>
+  <x:String x:Key="Text.Preferences.General.FileManager">File manager</x:String>
+  <x:String x:Key="Text.FileManager.OpenFailed">Could not open {0}. Check that it is installed, or choose another file manager in Preferences → General.</x:String>
 </ResourceDictionary>

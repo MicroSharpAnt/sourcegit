@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--file-manager"))
+{
+    MacOSFileManagerTests.Run();
+    return;
+}
+
 if (args.Contains("--conflict-sources"))
 {
     ConflictSourceTests.Run();

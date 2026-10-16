@@ -1141,4 +1141,6 @@
   <x:String x:Key="Text.ConflictSource.Patch">套用的暫存或修補</x:String>
   <x:String x:Key="Text.ConflictSource.Use">採用 {0}</x:String>
   <x:String x:Key="Text.ConflictSource.CurrentContent">目前內容</x:String>
+  <x:String x:Key="Text.Preferences.General.FileManager">檔案管理器</x:String>
+  <x:String x:Key="Text.FileManager.OpenFailed">無法開啟 {0}。請確認已安裝，或在偏好設定 → 一般設定中選擇其他檔案管理器。</x:String>
 </ResourceDictionary>

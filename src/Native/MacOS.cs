@@ -110,12 +110,29 @@ namespace SourceGit.Native
             Process.Start("open", url);
         }
 
-        public void OpenInFileManager(string path)
+        public async void OpenInFileManager(string path)
         {
-            if (Directory.Exists(path))
-                Process.Start("open", path.Quoted());
-            else if (File.Exists(path))
-                Process.Start("open", $"{path.Quoted()} -R");
+            var selection = ViewModels.Preferences.Instance.MacOSFileManager;
+            var start = MacOSFileManager.CreateStartInfo(path, selection);
+            if (start == null)
+                return;
+
+            try
+            {
+                using var process = Process.Start(start);
+                if (process == null)
+                    throw new System.InvalidOperationException("Could not start the file manager.");
+                await process.WaitForExitAsync().ConfigureAwait(false);
+                if (process.ExitCode == 0)
+                    return;
+            }
+            catch (Exception)
+            {
+                // Report launch failures in the application, including a missing app.
+            }
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => Models.Notification.Send(null,
+                App.Text("FileManager.OpenFailed", MacOSFileManager.Names[selection]), true));
         }
 
         public void OpenTerminal(string workdir, string _)

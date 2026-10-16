@@ -1141,4 +1141,6 @@
   <x:String x:Key="Text.ConflictSource.Patch">应用的暂存或补丁</x:String>
   <x:String x:Key="Text.ConflictSource.Use">采用 {0}</x:String>
   <x:String x:Key="Text.ConflictSource.CurrentContent">当前内容</x:String>
+  <x:String x:Key="Text.Preferences.General.FileManager">文件管理器</x:String>
+  <x:String x:Key="Text.FileManager.OpenFailed">无法打开 {0}。请确认已安装，或在偏好设置 → 通用配置中选择其他文件管理器。</x:String>
 </ResourceDictionary>
