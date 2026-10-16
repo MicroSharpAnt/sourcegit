@@ -25,20 +25,20 @@
 
         <Border Margin="16,0" Padding="8" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource Brush.Border2}">
           <Border.DataTemplates>
-            <DataTemplate DataType="m:Commit">
+            <DataTemplate DataType="vm:ConflictSource">
               <StackPanel Orientation="Horizontal">
-                <v:CommitRefsPresenter Foreground="{DynamicResource Brush.FG1}"
+                <v:CommitRefsPresenter DataContext="{Binding Commit}" Foreground="{DynamicResource Brush.FG1}"
                                        FontSize="12"
                                        VerticalAlignment="Center"
                                        UseGraphColor="False"/>
                 <TextBlock Margin="4,0,0,0"
-                           Text="{Binding SHA, Converter={x:Static c:StringConverters.ToShortSHA}}"
+                           Text="{Binding Hash}" ToolTip.Tip="{Binding Commit.SHA}"
                            FontFamily="{DynamicResource Fonts.Monospace}"
                            Foreground="DarkOrange"
                            TextDecorations="Underline"
                            Cursor="Hand"
                            PointerPressed="OnPressedSHA"/>
-                <TextBlock Margin="4,0,0,0" Text="{Binding Subject}"/>
+                <TextBlock Margin="4,0,0,0" Text="{Binding Commit.Subject}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Commit.Subject}"/>
               </StackPanel>
             </DataTemplate>
 
@@ -51,9 +51,9 @@
           </Border.DataTemplates>
 
           <Grid Margin="8,0,0,0" RowDefinitions="32,32" ColumnDefinitions="Auto,*">
-            <TextBlock Grid.Row="0" Grid.Column="0" Classes="info_label" Text="MINE"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Classes="info_label" x:Name="MineTitle" Text="{Binding Mine.Title}" MaxWidth="260" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Mine.Title}"/>
             <ContentControl Grid.Row="0" Grid.Column="1" Margin="16,0,0,0" Content="{Binding Mine}"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Classes="info_label" Text="THEIRS"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Classes="info_label" x:Name="TheirsTitle" Text="{Binding Theirs.Title}" MaxWidth="260" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Theirs.Title}"/>
             <ContentControl Grid.Row="1" Grid.Column="1" Margin="16,0,0,0" Content="{Binding Theirs}"/>
           </Grid>
         </Border>
@@ -62,13 +62,13 @@
           <Button Classes="flat" Margin="0,0,0,0" Click="OnUseTheirs">
             <StackPanel Orientation="Horizontal">
               <Path Width="12" Height="12" Data="{StaticResource Icons.Incoming}"/>
-              <TextBlock Margin="6,0,0,0" Text="{DynamicResource Text.WorkingCopy.Conflicts.UseTheirs}" VerticalAlignment="Center"/>
+              <TextBlock Margin="6,0,0,0" Text="{Binding Theirs.UseLabel}" VerticalAlignment="Center"/>
             </StackPanel>
           </Button>
           <Button Classes="flat" Margin="8,0,0,0" Click="OnUseMine">
             <StackPanel Orientation="Horizontal">
               <Path Width="12" Height="12" Data="{StaticResource Icons.Local}"/>
-              <TextBlock Margin="6,0,0,0" Text="{DynamicResource Text.WorkingCopy.Conflicts.UseMine}" VerticalAlignment="Center"/>
+              <TextBlock Margin="6,0,0,0" Text="{Binding Mine.UseLabel}" VerticalAlignment="Center"/>
             </StackPanel>
           </Button>
           <SplitButton Height="28"

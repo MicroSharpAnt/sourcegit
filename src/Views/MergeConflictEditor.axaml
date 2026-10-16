@@ -83,24 +83,24 @@
             <Border Grid.Row="0" Padding="8,0" Background="{DynamicResource Brush.Popup}" BorderThickness="1,1,1,0" BorderBrush="{DynamicResource Brush.Border2}">
               <Grid ColumnDefinitions="Auto,*">
                 <TextBlock Grid.Column="0"
-                           Text="{DynamicResource Text.MergeConflictEditor.Mine}"
+                           x:Name="MineTitle" Text="{Binding Mine.Title}" MaxWidth="260" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Mine.Title}"
                            FontWeight="Bold"
                            VerticalAlignment="Center"/>
                 <ContentControl Grid.Column="1" Margin="8,0,0,0" Content="{Binding Mine, Mode=OneWay}">
                   <ContentControl.DataTemplates>
-                    <DataTemplate DataType="m:Commit">
+                    <DataTemplate DataType="vm:ConflictSource">
                       <StackPanel Orientation="Horizontal">
-                        <v:CommitRefsPresenter Foreground="{DynamicResource Brush.FG1}"
+                        <v:CommitRefsPresenter DataContext="{Binding Commit}" Foreground="{DynamicResource Brush.FG1}"
                                                FontSize="12"
                                                VerticalAlignment="Center"
                                                UseGraphColor="False"/>
                         <TextBlock Margin="4,0,0,0"
                                    FontFamily="{DynamicResource Fonts.Monospace}"
-                                   Text="{Binding SHA, Converter={x:Static c:StringConverters.ToShortSHA}}"
+                                   Text="{Binding Hash}" ToolTip.Tip="{Binding Commit.SHA}"
                                    Foreground="DarkOrange"
                                    TextDecorations="Underline"
                                    Cursor="Hand"/>
-                        <TextBlock Margin="4,0,0,0" Text="{Binding Subject}"/>
+                        <TextBlock Margin="4,0,0,0" Text="{Binding Commit.Subject}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Commit.Subject}"/>
                       </StackPanel>
                     </DataTemplate>
                     <DataTemplate DataType="x:String">
@@ -136,7 +136,7 @@
                       Padding="4,2"
                       BoxShadow="0 2 8 0 #40000000">
                 <Button Classes="flat primary"
-                        Content="{DynamicResource Text.MergeConflictEditor.UseMine}"
+                        x:Name="UseMineButton" Content="{Binding Mine.UseLabel}"
                         Command="{Binding Resolve}"
                         CommandParameter="{x:Static m:ConflictResolution.UseOurs}"/>
               </Border>
@@ -150,24 +150,24 @@
             <Border Grid.Row="0" Padding="8,0" Background="{DynamicResource Brush.Popup}" BorderThickness="1,1,1,0" BorderBrush="{DynamicResource Brush.Border2}">
               <Grid ColumnDefinitions="Auto,*">
                 <TextBlock Grid.Column="0"
-                           Text="{DynamicResource Text.MergeConflictEditor.Theirs}"
+                           x:Name="TheirsTitle" Text="{Binding Theirs.Title}" MaxWidth="260" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Theirs.Title}"
                            FontWeight="Bold"
                            VerticalAlignment="Center"/>
                 <ContentControl Grid.Column="1" Margin="8,0,0,0" Content="{Binding Theirs, Mode=OneWay}">
                   <ContentControl.DataTemplates>
-                    <DataTemplate DataType="m:Commit">
+                    <DataTemplate DataType="vm:ConflictSource">
                       <StackPanel Orientation="Horizontal">
-                        <v:CommitRefsPresenter Foreground="{DynamicResource Brush.FG1}"
+                        <v:CommitRefsPresenter DataContext="{Binding Commit}" Foreground="{DynamicResource Brush.FG1}"
                                                FontSize="12"
                                                VerticalAlignment="Center"
                                                UseGraphColor="False"/>
                         <TextBlock Margin="4,0,0,0"
                                    FontFamily="{DynamicResource Fonts.Monospace}"
-                                   Text="{Binding SHA, Converter={x:Static c:StringConverters.ToShortSHA}}"
+                                   Text="{Binding Hash}" ToolTip.Tip="{Binding Commit.SHA}"
                                    Foreground="DarkOrange"
                                    TextDecorations="Underline"
                                    Cursor="Hand"/>
-                        <TextBlock Margin="4,0,0,0" Text="{Binding Subject}"/>
+                        <TextBlock Margin="4,0,0,0" Text="{Binding Commit.Subject}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Commit.Subject}"/>
                       </StackPanel>
                     </DataTemplate>
                     <DataTemplate DataType="x:String">
@@ -203,7 +203,7 @@
                       Padding="4,2"
                       BoxShadow="0 2 8 0 #40000000">
                 <Button Classes="flat primary"
-                        Content="{DynamicResource Text.MergeConflictEditor.UseTheirs}"
+                        x:Name="UseTheirsButton" Content="{Binding Theirs.UseLabel}"
                         Command="{Binding Resolve}"
                         CommandParameter="{x:Static m:ConflictResolution.UseTheirs}"/>
               </Border>
@@ -242,11 +242,11 @@
                     BoxShadow="0 2 8 0 #40000000">
               <StackPanel Orientation="Horizontal" Spacing="4">
                 <Button Classes="flat primary"
-                        Content="{DynamicResource Text.MergeConflictEditor.UseMine}"
+                        Content="{Binding Mine.UseLabel}"
                         Command="{Binding Resolve}"
                         CommandParameter="{x:Static m:ConflictResolution.UseOurs}"/>
                 <Button Classes="flat primary"
-                        Content="{DynamicResource Text.MergeConflictEditor.UseTheirs}"
+                        Content="{Binding Theirs.UseLabel}"
                         Command="{Binding Resolve}"
                         CommandParameter="{x:Static m:ConflictResolution.UseTheirs}"/>
                 <Button Classes="flat primary">

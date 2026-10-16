@@ -602,8 +602,8 @@
   <x:String x:Key="Text.Merge.Test.NoConflicts" xml:space="preserve">Merge can be done without conflicts</x:String>
   <x:String x:Key="Text.Merge.Test.UnknownError" xml:space="preserve">Unknown error occurs while testing for merge</x:String>
   <x:String x:Key="Text.Merge.Test.WillCauseConflicts" xml:space="preserve">Merge will cause conflicts</x:String>
-  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.MineFirst" xml:space="preserve">First Mine, then Theirs</x:String>
-  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.TheirsFirst" xml:space="preserve">First Theirs, then Mine</x:String>
+  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.MineFirst" xml:space="preserve">Left side first, then right</x:String>
+  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.TheirsFirst" xml:space="preserve">Right side first, then left</x:String>
   <x:String x:Key="Text.MergeConflictEditor.UseBoth" xml:space="preserve">USE BOTH</x:String>
   <x:String x:Key="Text.MergeConflictEditor.AllResolved" xml:space="preserve">All conflicts resolved</x:String>
   <x:String x:Key="Text.MergeConflictEditor.ConflictsRemaining" xml:space="preserve">{0} conflict(s) remaining</x:String>
@@ -1128,4 +1128,13 @@
   <x:String x:Key="Text.TableDiff.Absent">Absent</x:String>
   <x:String x:Key="Text.TableDiff.Worktree">Working tree</x:String>
   <x:String x:Key="Text.TableDiff.Index">Index</x:String>
+  <x:String x:Key="Text.ConflictSource.Current">Current branch</x:String>
+  <x:String x:Key="Text.ConflictSource.Incoming">Incoming branch / commit</x:String>
+  <x:String x:Key="Text.ConflictSource.Target">Target-side current content</x:String>
+  <x:String x:Key="Text.ConflictSource.Replaying">Replaying</x:String>
+  <x:String x:Key="Text.ConflictSource.Picking">Cherry-picking</x:String>
+  <x:String x:Key="Text.ConflictSource.Reverting">Result of reverting commit</x:String>
+  <x:String x:Key="Text.ConflictSource.Patch">Applied stash or patch</x:String>
+  <x:String x:Key="Text.ConflictSource.Use">Use {0}</x:String>
+  <x:String x:Key="Text.ConflictSource.CurrentContent">Current content</x:String>
 </ResourceDictionary>

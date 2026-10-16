@@ -15,8 +15,8 @@ namespace SourceGit.Views
         private void OnPressedSHA(object sender, PointerPressedEventArgs e)
         {
             var repoView = this.FindAncestorOfType<Repository>();
-            if (repoView is { DataContext: ViewModels.Repository repo } && sender is TextBlock text)
-                repo.NavigateToCommit(text.Text);
+            if (repoView is { DataContext: ViewModels.Repository repo } && sender is TextBlock { DataContext: ViewModels.ConflictSource { Commit: { } commit } })
+                repo.NavigateToCommit(commit.SHA);
 
             e.Handled = true;
         }

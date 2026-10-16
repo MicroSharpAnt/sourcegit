@@ -16,12 +16,12 @@ namespace SourceGit.ViewModels
             get => _filePath;
         }
 
-        public object Mine
+        public ConflictSource Mine
         {
             get;
         }
 
-        public object Theirs
+        public ConflictSource Theirs
         {
             get;
         }
@@ -84,14 +84,9 @@ namespace SourceGit.ViewModels
             _repo = repo;
             _filePath = filePath;
 
-            (Mine, Theirs) = repo.InProgressContext switch
-            {
-                CherryPickInProgress cherryPick => (head, cherryPick.Head),
-                RebaseInProgress rebase => (rebase.Onto, rebase.StoppedAt),
-                RevertInProgress revert => (head, revert.Head),
-                MergeInProgress merge => (head, merge.Source),
-                _ => (head, (object)"Stash or Patch"),
-            };
+            var sources = ConflictSources.Create(repo.InProgressContext, head, repo.CurrentBranch?.Name);
+            Mine = sources.Mine;
+            Theirs = sources.Theirs;
 
             var workingCopyPath = Path.Combine(_repo.FullPath, _filePath);
             var workingCopyContent = string.Empty;

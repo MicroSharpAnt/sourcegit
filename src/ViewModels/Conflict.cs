@@ -23,13 +23,13 @@ namespace SourceGit.ViewModels
             private set => SetProperty(ref _state, value);
         }
 
-        public object Theirs
+        public ConflictSource Theirs
         {
             get => _theirs;
             private set => SetProperty(ref _theirs, value);
         }
 
-        public object Mine
+        public ConflictSource Mine
         {
             get => _mine;
             private set => SetProperty(ref _mine, value);
@@ -45,14 +45,7 @@ namespace SourceGit.ViewModels
             {
                 _head = new Commands.QuerySingleCommit(repo.FullPath, "HEAD").GetResult();
 
-                var (mine, theirs) = wc.InProgressContext switch
-                {
-                    CherryPickInProgress cherryPick => (_head, cherryPick.Head),
-                    RebaseInProgress rebase => (rebase.Onto, rebase.StoppedAt),
-                    RevertInProgress revert => (_head, revert.Head),
-                    MergeInProgress merge => (_head, merge.Source),
-                    _ => (_head, (object)"Stash or Patch"),
-                };
+                var sources = ConflictSources.Create(wc.InProgressContext, _head, new Commands.QueryCurrentBranch(repo.FullPath).GetResult());
 
                 var state = Models.ConflictFileState.Unknown;
                 if ((_change.ConflictReason is Models.ConflictReason.BothAdded or Models.ConflictReason.BothModified) && !Directory.Exists(Path.Combine(_repo.FullPath, _change.Path)))
@@ -63,8 +56,8 @@ namespace SourceGit.ViewModels
                 Dispatcher.UIThread.Post(() =>
                 {
                     State = state;
-                    Mine = mine;
-                    Theirs = theirs;
+                    Mine = sources.Mine;
+                    Theirs = sources.Theirs;
                 });
             });
         }
@@ -95,7 +88,7 @@ namespace SourceGit.ViewModels
         private Models.Change _change = null;
         private Models.Commit _head = null;
         private Models.ConflictFileState _state = Models.ConflictFileState.Unknown;
-        private object _mine = null;
-        private object _theirs = null;
+        private ConflictSource _mine = null;
+        private ConflictSource _theirs = null;
     }
 }

@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--conflict-sources"))
+{
+    ConflictSourceTests.Run();
+    return;
+}
+
 if (args.Contains("--table-settings"))
 {
     TableSettingsTests.Run();

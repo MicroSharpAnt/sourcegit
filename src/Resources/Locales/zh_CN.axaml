@@ -606,8 +606,8 @@
   <x:String x:Key="Text.Merge.Test.NoConflicts" xml:space="preserve">合并操作不会产生冲突</x:String>
   <x:String x:Key="Text.Merge.Test.UnknownError" xml:space="preserve">检测合并冲突时出现未知错误</x:String>
   <x:String x:Key="Text.Merge.Test.WillCauseConflicts" xml:space="preserve">合并操作将存在冲突文件</x:String>
-  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.MineFirst" xml:space="preserve">先应用 MINE 后 THEIRS</x:String>
-  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.TheirsFirst" xml:space="preserve">先应用 THEIRS 后 MINE</x:String>
+  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.MineFirst" xml:space="preserve">先应用左侧，再应用右侧</x:String>
+  <x:String x:Key="Text.MergeConflictEditor.AcceptBoth.TheirsFirst" xml:space="preserve">先应用右侧，再应用左侧</x:String>
   <x:String x:Key="Text.MergeConflictEditor.UseBoth" xml:space="preserve">应用全部</x:String>
   <x:String x:Key="Text.MergeConflictEditor.AllResolved" xml:space="preserve">所有冲突已解决</x:String>
   <x:String x:Key="Text.MergeConflictEditor.ConflictsRemaining" xml:space="preserve">{0} 个冲突未解决</x:String>
@@ -1132,4 +1132,13 @@
   <x:String x:Key="Text.TableDiff.Absent">不存在</x:String>
   <x:String x:Key="Text.TableDiff.Worktree">工作区</x:String>
   <x:String x:Key="Text.TableDiff.Index">暂存区</x:String>
+  <x:String x:Key="Text.ConflictSource.Current">当前分支</x:String>
+  <x:String x:Key="Text.ConflictSource.Incoming">合入分支 / 提交</x:String>
+  <x:String x:Key="Text.ConflictSource.Target">目标侧当前内容</x:String>
+  <x:String x:Key="Text.ConflictSource.Replaying">正在重放</x:String>
+  <x:String x:Key="Text.ConflictSource.Picking">正在拣选</x:String>
+  <x:String x:Key="Text.ConflictSource.Reverting">撤销此提交后的内容</x:String>
+  <x:String x:Key="Text.ConflictSource.Patch">应用的暂存或补丁</x:String>
+  <x:String x:Key="Text.ConflictSource.Use">采用 {0}</x:String>
+  <x:String x:Key="Text.ConflictSource.CurrentContent">当前内容</x:String>
 </ResourceDictionary>
