@@ -26,8 +26,8 @@ internal static class ConflictSourceTests
         Check(labels.Mine.Title.Contains("main") && labels.Theirs.Title.Contains("feature"), "merge titles identify branches");
         Check(labels.Mine.Hash == "…" + current[^8..] && labels.Theirs.Hash == "…" + source[^8..], "merge displays hash suffixes");
         Check(labels.Mine.UseLabel.Contains("main") && labels.Theirs.UseLabel.Contains("feature"), "actions identify the same branches");
-        var fixedHash = ConflictSources.Create(null, new Commit { SHA = "0123456789abcdef0123456789abcdefcafebabe" }, "main");
-        Check(fixedHash.Mine.Hash == "…cafebabe", "hash uses last eight characters, not prefix");
+        var fixedHash = new ConflictSource("ConflictSource.Current", "main", new Commit { SHA = "0123456789abcdef0123456789abcdefcafebabe" });
+        Check(fixedHash.Hash == "…cafebabe", "hash uses last eight characters, not prefix");
         git.Git("merge", "--abort");
         git.Git("checkout", "-b", "replay", "main~1");
         git.Commit("safe replay", "safe.txt", "safe\n");
@@ -48,6 +48,15 @@ internal static class ConflictSourceTests
         var unknown = ConflictSources.Create(null, head, null);
         Check(unknown.Theirs.Hash == "" && unknown.Theirs.Title == "Applied stash or patch", "unknown source does not invent a commit");
         Check(unknown.Mine.Title == "Current content", "detached or unknown branch does not claim a named branch");
+
+        File.WriteAllText(Path.Combine(git.Path, "a.txt"), "stash\n");
+        git.Git("stash", "push");
+        File.WriteAllText(Path.Combine(git.Path, "a.txt"), "local staged\n");
+        git.Git("add", "a.txt");
+        try { git.Git("stash", "apply"); } catch (InvalidOperationException) { }
+        Check(git.Git("show", ":2:a.txt") == "local staged" && git.Git("show", "HEAD:a.txt") == "main", "stash fixture has local-side content different from HEAD");
+        var stashLabels = ConflictSources.Create(null, head, "main");
+        Check(stashLabels.Mine.Commit == null && stashLabels.Mine.Hash == "" && stashLabels.Mine.Title == "Current content", "stash local changes are not attributed to HEAD");
 
         Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(new Uri("avares://SourceGit/")) { Source = new Uri("avares://SourceGit/Resources/Icons.axaml") });
         var editorModel = new MergeConflictEditor(repo, head, "a.txt");

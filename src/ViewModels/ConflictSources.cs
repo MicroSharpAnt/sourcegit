@@ -35,6 +35,10 @@ namespace SourceGit.ViewModels
                     // The commit identifies the operation being undone, not the right-side blob.
                     theirs = new("ConflictSource.Reverting", null, revert.Head);
                     break;
+                default:
+                    // Applying a stash/patch can conflict with local changes not present in HEAD.
+                    mine = new("ConflictSource.CurrentContent", null, null);
+                    break;
             }
             return new() { Mine = mine, Theirs = theirs };
         }
