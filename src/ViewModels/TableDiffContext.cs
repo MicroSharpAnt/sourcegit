@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,8 +25,15 @@ namespace SourceGit.ViewModels
         public bool WrapText { get => _wrapText; set => SetProperty(ref _wrapText, value); }
         public bool OnlyChanges
         {
-            get => _onlyChanges;
-            set { if (SetProperty(ref _onlyChanges, value)) FilterRows(); }
+            get => TableViewSettings.Instance.OnlyChanges;
+            set
+            {
+                if (OnlyChanges == value)
+                    return;
+                TableViewSettings.Instance.OnlyChanges = value;
+                if (!_listeningToSettings)
+                    RefreshFilter();
+            }
         }
         public int SheetIndex
         {
@@ -50,6 +58,12 @@ namespace SourceGit.ViewModels
 
         public async Task LoadAsync()
         {
+            if (!_listeningToSettings)
+            {
+                TableViewSettings.Instance.PropertyChanged += OnSettingsChanged;
+                _listeningToSettings = true;
+            }
+            OnPropertyChanged(nameof(OnlyChanges));
             _closed = false;
             IsLoading = true;
             _sheetIndex = -1;
@@ -86,6 +100,8 @@ namespace SourceGit.ViewModels
 
         public void Close()
         {
+            TableViewSettings.Instance.PropertyChanged -= OnSettingsChanged;
+            _listeningToSettings = false;
             _closed = true;
             _generation++;
         }
@@ -137,6 +153,18 @@ namespace SourceGit.ViewModels
 
         private void FilterRows() => Rows = Result == null ? [] : OnlyChanges ? Result.Rows.Where(x => x.Kind != Models.TableChangeKind.Unchanged).ToList() : Result.Rows;
 
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TableViewSettings.OnlyChanges))
+                RefreshFilter();
+        }
+
+        private void RefreshFilter()
+        {
+            OnPropertyChanged(nameof(OnlyChanges));
+            FilterRows();
+        }
+
         public static string ColumnName(int index)
         {
             var name = string.Empty;
@@ -149,7 +177,7 @@ namespace SourceGit.ViewModels
 
         private bool _closed;
         private bool _isLoading = true;
-        private bool _onlyChanges;
+        private bool _listeningToSettings;
         private bool _wrapText;
         private int _sheetIndex = -1;
         private int _keyIndex;

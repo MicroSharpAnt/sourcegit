@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 using Avalonia;
@@ -23,7 +24,6 @@ namespace SourceGit.Views
             if (DataContext is not Models.TablePreview preview || Sheets == null)
                 return;
 
-            Raw.IsChecked = false;
             Raw.IsVisible = preview.RawText != null;
             RawText.DataContext = preview.RawText;
             Error.Text = preview.Error;
@@ -33,6 +33,26 @@ namespace SourceGit.Views
             Sheets.ItemsSource = preview.Sheets.Select(x => x.Name).ToArray();
             Sheets.SelectedIndex = preview.Sheets.Count > 0 ? 0 : -1;
             UpdateSheet();
+            UpdateRaw();
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            ViewModels.TableViewSettings.Instance.PropertyChanged += OnSettingsChanged;
+            UpdateRaw();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            ViewModels.TableViewSettings.Instance.PropertyChanged -= OnSettingsChanged;
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ViewModels.TableViewSettings.ShowCsvRawText))
+                UpdateRaw();
         }
 
         private void OnSheetChanged(object sender, SelectionChangedEventArgs e) => UpdateSheet();
@@ -79,13 +99,26 @@ namespace SourceGit.Views
 
         private void OnRawChanged(object sender, RoutedEventArgs e)
         {
+            if (_updatingRaw || DataContext is not Models.TablePreview { RawText: not null })
+                return;
+            ViewModels.TableViewSettings.Instance.ShowCsvRawText = Raw.IsChecked == true;
+            UpdateRaw();
+        }
+
+        private void UpdateRaw()
+        {
             if (Table == null)
                 return;
-            var raw = Raw.IsChecked == true;
+            var raw = DataContext is Models.TablePreview { RawText: not null } && ViewModels.TableViewSettings.Instance.ShowCsvRawText;
+            _updatingRaw = true;
+            Raw.IsChecked = raw;
+            _updatingRaw = false;
             Table.IsVisible = !raw;
             RawText.IsVisible = raw;
             Sheets.IsEnabled = !raw;
         }
+
+        private bool _updatingRaw;
 
         private static string ColumnName(int index)
         {
