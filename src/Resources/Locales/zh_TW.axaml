@@ -807,6 +807,12 @@
   <x:String x:Key="Text.Repository.BranchSort" xml:space="preserve">排序</x:String>
   <x:String x:Key="Text.Repository.BranchSort.ByCommitterDate" xml:space="preserve">依建立時間</x:String>
   <x:String x:Key="Text.Repository.BranchSort.ByName" xml:space="preserve">依名稱遞增排序</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock" xml:space="preserve">清除索引鎖</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Confirm" xml:space="preserve">確定清除目前工作樹的 index.lock？請先結束終端及其他工具中的 Git 操作。刪除使用中的鎖可能損壞索引。</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Busy" xml:space="preserve">SourceGit 正在執行 Git 操作，請等待操作結束後再清除索引鎖。</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Missing" xml:space="preserve">未發現 index.lock，無需清理。</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Success" xml:space="preserve">索引鎖已清除。</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Failed" xml:space="preserve">無法清除索引鎖：{0}</x:String>
   <x:String x:Key="Text.Repository.Clean" xml:space="preserve">清理本存放庫 (GC)</x:String>
   <x:String x:Key="Text.Repository.CleanTips" xml:space="preserve">本操作將執行 `git gc` 指令。</x:String>
   <x:String x:Key="Text.Repository.ClearAllCommitsFilter" xml:space="preserve">清空篩選規則</x:String>

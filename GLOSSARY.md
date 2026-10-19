@@ -15,3 +15,5 @@ Git repository browsing and local history editing.
 **Cell difference (单元格差异)**: The added, deleted or changed stored values between two versions of a table, after matching their rows.
 
 **Key column (关键列)**: A column whose nonempty, unique values identify corresponding rows across table versions, independent of their positions.
+
+**Index lock (索引锁)**: A temporary lock protecting a worktree’s staging area while Git updates it. A leftover lock after an interrupted operation can prevent later staging or commits.

@@ -803,6 +803,12 @@
   <x:String x:Key="Text.Repository.BranchSort" xml:space="preserve">Sort</x:String>
   <x:String x:Key="Text.Repository.BranchSort.ByCommitterDate" xml:space="preserve">By Committer Date</x:String>
   <x:String x:Key="Text.Repository.BranchSort.ByName" xml:space="preserve">By Name</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock" xml:space="preserve">Clear Index Lock</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Confirm" xml:space="preserve">Remove index.lock from this worktree? First stop Git operations in terminals and other tools. Removing a lock that is still in use can damage the index.</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Busy" xml:space="preserve">A Git operation is running in SourceGit. Wait for it to finish before clearing the index lock.</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Missing" xml:space="preserve">No index.lock found. No cleanup needed.</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Success" xml:space="preserve">Index lock cleared.</x:String>
+  <x:String x:Key="Text.Repository.ClearIndexLock.Failed" xml:space="preserve">Could not clear the index lock: {0}</x:String>
   <x:String x:Key="Text.Repository.Clean" xml:space="preserve">Cleanup (GC &amp; Prune)</x:String>
   <x:String x:Key="Text.Repository.CleanTips" xml:space="preserve">Run `git gc` command for this repository.</x:String>
   <x:String x:Key="Text.Repository.ClearAllCommitsFilter" xml:space="preserve">Clear all</x:String>

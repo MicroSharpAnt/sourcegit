@@ -95,6 +95,8 @@ namespace SourceGit.Models
             });
         }
 
+        public bool IsLocked => Interlocked.Read(ref _lockCount) > 0;
+
         public IDisposable Lock()
         {
             return new LockContext(this);

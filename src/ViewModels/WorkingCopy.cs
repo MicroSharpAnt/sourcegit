@@ -551,6 +551,7 @@ namespace SourceGit.ViewModels
 
         public async Task<bool> UseExternalMergeToolAsync(Models.Change change)
         {
+            using var lockWatcher = _repo.LockWatcher();
             return await new Commands.MergeTool(_repo.FullPath, change?.Path).OpenAsync();
         }
 

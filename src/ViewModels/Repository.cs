@@ -738,6 +738,31 @@ namespace SourceGit.ViewModels
                 await ShowAndStartPopupAsync(new Cleanup(this));
         }
 
+        public bool CanClearIndexLock(Popup confirmation = null)
+        {
+            var page = GetOwnerPage();
+            return page != null && !IsBare && !IsAutoFetching && !IsBisectCommandRunning &&
+                _workingCopy is not { IsCommitting: true } && _watcher is { IsLocked: false } &&
+                (page.Popup is not { InProgress: true } || ReferenceEquals(page.Popup, confirmation));
+        }
+
+        public void ClearIndexLock()
+        {
+            if (!CanClearIndexLock())
+            {
+                SendNotification(App.Text("Repository.ClearIndexLock.Busy"), true);
+                return;
+            }
+
+            if (!File.Exists(Path.Combine(GitDir, "index.lock")))
+            {
+                SendNotification(App.Text("Repository.ClearIndexLock.Missing"));
+                return;
+            }
+
+            ShowPopup(new ClearIndexLock(this));
+        }
+
         public void ClearFilter()
         {
             Filter = string.Empty;
@@ -1330,8 +1355,12 @@ namespace SourceGit.ViewModels
             var token = _cancellationRefreshWorkingCopyChanges.Token;
             var noOptionalLocks = Interlocked.Add(ref _queryLocalChangesTimes, 1) > 1;
 
+            // The initial status refresh can write the index. Reserve before scheduling
+            // so clearing the index lock cannot race the background command startup.
+            var watcherLock = noOptionalLocks ? null : LockWatcher();
             Task.Run(async () =>
             {
+                using var heldWatcherLock = watcherLock;
                 var changes = await new Commands.QueryLocalChanges(FullPath, _uiStates.IncludeUntrackedInLocalChanges, noOptionalLocks)
                     .WithCancellation(token)
                     .GetResultAsync()
@@ -1349,7 +1378,7 @@ namespace SourceGit.ViewModels
                     OnPropertyChanged(nameof(InProgressContext));
                     GetOwnerPage()?.ChangeDirtyState(Models.DirtyState.HasLocalChanges, changes.Count == 0);
                 });
-            }, token);
+            });
         }
 
         public void RefreshStashes()
