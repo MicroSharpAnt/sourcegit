@@ -1,6 +1,6 @@
 # 清除索引锁
 
-Status: ready-for-human
+Status: done
 
 用户确认（2026-10-19）：顶部清理按钮旁增加独立清除索引锁按钮。
 
@@ -21,4 +21,4 @@ Status: ready-for-human
 ## Delivery
 
 Native AOT ARM64 package built and codesign verification passed at `/tmp/sourcegit-unlock-delivery/SourceGit.app`.
-Installation is pending: normal quit returned AppleScript error -128 (user canceled). No app replacement or configuration change was made. Resume installation after the user closes SourceGit normally.
+Installation completed on 2026-10-19 after the user requested retry. Installed to `/Applications/SourceGit.app`; signature and executable hash verified. Old app and configuration backed up at `/Users/tu/Library/Application Support/SourceGitBackups/clear-index-lock-20261019-160957`. The application was not launched after installation.
