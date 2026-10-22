@@ -15,6 +15,7 @@ namespace SourceGit.Views
         public TablePreviewView()
         {
             InitializeComponent();
+            Table.CellValue = (item, column) => item is string[] row && column < row.Length ? row[column] : string.Empty;
             Table.LoadingRow += (_, e) => e.Row.Header = (e.Row.Index + 1).ToString();
         }
 
@@ -90,7 +91,7 @@ namespace SourceGit.Views
                             TextTrimming = TextTrimming.CharacterEllipsis,
                         };
                         ToolTip.SetTip(cell, value);
-                        return cell;
+                        return TableCopyGrid.WrapCell(cell, index);
                     }),
                 });
             }

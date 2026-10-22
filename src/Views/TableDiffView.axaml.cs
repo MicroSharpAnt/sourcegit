@@ -16,7 +16,7 @@ using Avalonia.VisualTree;
 
 namespace SourceGit.Views
 {
-    public class TableDiffGrid : DataGrid
+    public class TableDiffGrid : TableCopyGrid
     {
         protected override Type StyleKeyOverride => typeof(DataGrid);
         public TableDiffGrid Partner { get; set; }
@@ -88,6 +88,8 @@ namespace SourceGit.Views
             InitializeComponent();
             OldGrid.Partner = NewGrid;
             NewGrid.Partner = OldGrid;
+            OldGrid.CellValue = (item, column) => Models.TableDiff.Value(((Models.TableDiffRow)item).Old, column);
+            NewGrid.CellValue = (item, column) => Models.TableDiff.Value(((Models.TableDiffRow)item).New, column);
             OldGrid.LoadingRow += (_, e) => SetRowHeader(e, true);
             NewGrid.LoadingRow += (_, e) => SetRowHeader(e, false);
             OldGrid.LoadingRow += (_, e) => SetRowHeight(e.Row);
@@ -200,7 +202,7 @@ namespace SourceGit.Views
                             Child = text,
                         };
                         ToolTip.SetTip(cell, $"{App.Text("Diff.Old")}: {Models.TableDiff.Value(row.Old, column)}\n{App.Text("Diff.New")}: {Models.TableDiff.Value(row.New, column)}");
-                        return cell;
+                        return TableCopyGrid.WrapCell(cell, column);
                     }),
                 };
                 definition.PropertyChanged += OnColumnChanged;

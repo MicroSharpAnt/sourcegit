@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--table-copy"))
+{
+    TableCopyTests.Run();
+    return;
+}
+
 if (args.Contains("--file-manager"))
 {
     MacOSFileManagerTests.Run();

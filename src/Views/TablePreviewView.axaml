@@ -18,7 +18,7 @@
       <TextBlock x:Name="Empty" Text="{DynamicResource Text.TablePreview.Empty}" Foreground="{DynamicResource Brush.FG2}"/>
       <TextBlock x:Name="ValuesOnly" Text="{DynamicResource Text.TablePreview.ValuesOnly}" Foreground="{DynamicResource Brush.FG2}"/>
     </StackPanel>
-    <DataGrid x:Name="Table" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
+    <v:TableCopyGrid x:Name="Table" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
               CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeColumns="True"
               HeadersVisibility="All" GridLinesVisibility="All" RowHeight="28" RowHeaderWidth="48"/>
     <v:RevisionTextFileView x:Name="RawText" Grid.Row="2" IsVisible="False" FontFamily="{DynamicResource Fonts.Monospace}"/>
