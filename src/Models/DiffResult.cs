@@ -73,6 +73,8 @@ namespace SourceGit.Models
 
     public class ImageDiff
     {
+        public bool IsContentUnchanged { get; set; } = false;
+
         public Bitmap Old { get; set; } = null;
         public Bitmap New { get; set; } = null;
 
@@ -104,6 +106,8 @@ namespace SourceGit.Models
 
     public class DiffResult
     {
+        public bool IsContentUnchanged { get; set; } = false;
+
         public bool IsBinary { get; set; } = false;
         public bool IsSubmoduleChange { get; set; } = false;
         public string OldHash { get; set; } = string.Empty;

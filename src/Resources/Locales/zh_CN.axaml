@@ -378,6 +378,7 @@
   <x:String x:Key="Text.Diff.EmptyFile" xml:space="preserve">空文件</x:String>
   <x:String x:Key="Text.Diff.First" xml:space="preserve">首个差异</x:String>
   <x:String x:Key="Text.Diff.IgnoreWhitespace" xml:space="preserve">忽略空白符号变化</x:String>
+  <x:String x:Key="Text.Diff.Image.Unchanged" xml:space="preserve">图片内容未变</x:String>
   <x:String x:Key="Text.Diff.Image.Blend" xml:space="preserve">混合对比</x:String>
   <x:String x:Key="Text.Diff.Image.Difference" xml:space="preserve">差异比较</x:String>
   <x:String x:Key="Text.Diff.Image.SideBySide" xml:space="preserve">分列对比</x:String>

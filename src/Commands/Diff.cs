@@ -174,6 +174,12 @@ namespace SourceGit.Commands
             if (line.StartsWith(SPECIAL_DIFF_START, StringComparison.Ordinal))
                 return;
 
+            if (line.Equals("similarity index 100%", StringComparison.Ordinal))
+            {
+                _result.IsContentUnchanged = true;
+                return;
+            }
+
             if (ParseFileModeChange(line))
                 return;
 

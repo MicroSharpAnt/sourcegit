@@ -189,6 +189,13 @@ namespace SourceGit.ViewModels
                     else
                         rs = lfs;
                 }
+                else if (latest.IsContentUnchanged && ImageSource.GetDecoder(_option.Path) is var unchangedDecoder &&
+                    unchangedDecoder != Models.ImageDecoder.None)
+                {
+                    var image = await CreateImageDiffAsync(unchangedDecoder).ConfigureAwait(false);
+                    image.IsContentUnchanged = true;
+                    rs = image;
+                }
                 else if (latest.IsBinary)
                 {
                     var imgDecoder = ImageSource.GetDecoder(_option.Path);
@@ -293,7 +300,7 @@ namespace SourceGit.ViewModels
                 imgDiff.Old = oldImage.Bitmap;
                 imgDiff.OldFileSize = oldImage.Size;
 
-                var newImage = await ImageSource.FromRevisionAsync(_repo, string.Empty, oldPath, imgDecoder).ConfigureAwait(false);
+                var newImage = await ImageSource.FromRevisionAsync(_repo, string.Empty, _option.Path, imgDecoder).ConfigureAwait(false);
                 imgDiff.New = newImage.Bitmap;
                 imgDiff.NewFileSize = newImage.Size;
             }

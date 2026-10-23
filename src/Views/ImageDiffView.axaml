@@ -9,7 +9,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SourceGit.Views.ImageDiffView"
              x:DataType="m:ImageDiff">
-  <TabControl SelectedIndex="{Binding Source={x:Static vm:Preferences.Instance}, Path=ImageDiffActiveIdx, Mode=TwoWay}" Margin="0,0,0,8" TabStripPlacement="Bottom">
+  <Grid RowDefinitions="Auto,*">
+    <TextBlock Grid.Row="0" Text="{DynamicResource Text.Diff.Image.Unchanged}"
+               IsVisible="{Binding IsContentUnchanged}"
+               HorizontalAlignment="Center" Margin="8" Foreground="{DynamicResource Brush.FG2}"/>
+  <TabControl Grid.Row="1" SelectedIndex="{Binding Source={x:Static vm:Preferences.Instance}, Path=ImageDiffActiveIdx, Mode=TwoWay}" Margin="0,0,0,8" TabStripPlacement="Bottom">
     <TabControl.Styles>
       <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
         <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -219,4 +223,5 @@
     </TabItem>
 
   </TabControl>
+  </Grid>
 </UserControl>

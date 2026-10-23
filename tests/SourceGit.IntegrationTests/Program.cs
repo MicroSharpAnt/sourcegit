@@ -1,6 +1,12 @@
 using System.Diagnostics;
 using SourceGit.Commands;
 
+if (args.Contains("--image-rename"))
+{
+    ImageRenameTests.Run();
+    return;
+}
+
 if (args.Contains("--table-copy"))
 {
     TableCopyTests.Run();
