@@ -565,6 +565,7 @@ namespace SourceGit.Views
             menu.Items.Add(history);
             menu.Items.Add(new MenuItem() { Header = "-" });
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(path));
             menu.Items.Add(copyFullPath);
             return menu;
         }
@@ -811,6 +812,8 @@ namespace SourceGit.Views
             };
 
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(file.Path));
+
             menu.Items.Add(copyFullPath);
             return menu;
         }

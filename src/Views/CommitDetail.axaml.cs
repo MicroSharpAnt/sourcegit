@@ -314,6 +314,8 @@ namespace SourceGit.Views
             };
 
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(change.Path));
+
             menu.Items.Add(copyFullPath);
             return menu;
         }

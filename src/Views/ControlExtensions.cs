@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -29,6 +31,27 @@ namespace SourceGit.Views
             var clipboard = TopLevel.GetTopLevel(control)?.Clipboard;
             if (clipboard != null)
                 await clipboard.SetTextAsync(text);
+        }
+
+        public static MenuItem CreateCopyFileNameMenuItem(this Control control, string path)
+        {
+            return control.CreateCopyFileNameMenuItem(new[] { path });
+        }
+
+        public static MenuItem CreateCopyFileNameMenuItem(this Control control, IEnumerable<string> paths)
+        {
+            var names = string.Join(Environment.NewLine, paths.Select(path => System.IO.Path.GetFileName(path.TrimEnd('/'))));
+            var item = new MenuItem
+            {
+                Header = App.Text("CopyFileName"),
+                Icon = control.CreateMenuIcon("Icons.Copy")
+            };
+            item.Click += async (_, e) =>
+            {
+                await control.CopyTextAsync(names);
+                e.Handled = true;
+            };
+            return item;
         }
 
         public static Path CreateMenuIcon(this Control control, string iconKey)

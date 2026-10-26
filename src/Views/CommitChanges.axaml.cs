@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -153,6 +154,7 @@ namespace SourceGit.Views
             menu.Items.Add(patch);
             menu.Items.Add(new MenuItem { Header = "-" });
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(folder));
             menu.Items.Add(copyFullPath);
 
             return menu;
@@ -218,6 +220,7 @@ namespace SourceGit.Views
             menu.Items.Add(patch);
             menu.Items.Add(new MenuItem { Header = "-" });
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(change.Path));
             menu.Items.Add(copyFullPath);
 
             return menu;
@@ -318,6 +321,8 @@ namespace SourceGit.Views
             };
 
             menu.Items.Add(copyPath);
+            menu.Items.Add(this.CreateCopyFileNameMenuItem(changes.Select(c => c.Path)));
+
             menu.Items.Add(copyFullPath);
             return menu;
         }

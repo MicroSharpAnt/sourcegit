@@ -732,6 +732,8 @@ namespace SourceGit.Views
                 };
 
                 menu.Items.Add(copy);
+                menu.Items.Add(this.CreateCopyFileNameMenuItem(selection.IsSingleFolder ? selection.SingleFolderPath : change.Path));
+
                 menu.Items.Add(copyFullPath);
             }
             else
@@ -932,6 +934,7 @@ namespace SourceGit.Views
                     menu.Items.Add(history);
                     menu.Items.Add(new MenuItem() { Header = "-" });
                     menu.Items.Add(copy);
+                    menu.Items.Add(this.CreateCopyFileNameMenuItem(selection.SingleFolderPath));
                     menu.Items.Add(copyFullPath);
                 }
             }
@@ -1213,6 +1216,8 @@ namespace SourceGit.Views
                 };
 
                 menu.Items.Add(copyPath);
+                menu.Items.Add(this.CreateCopyFileNameMenuItem(selection.IsSingleFolder ? selection.SingleFolderPath : change.Path));
+
                 menu.Items.Add(copyFullPath);
             }
             else
@@ -1330,6 +1335,7 @@ namespace SourceGit.Views
                     menu.Items.Add(history);
                     menu.Items.Add(new MenuItem() { Header = "-" });
                     menu.Items.Add(copyPath);
+                    menu.Items.Add(this.CreateCopyFileNameMenuItem(selection.SingleFolderPath));
                     menu.Items.Add(copyFullPath);
                 }
             }

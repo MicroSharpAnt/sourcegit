@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using Avalonia.Controls;
@@ -259,6 +260,7 @@ namespace SourceGit.Views
                 menu.Items.Add(checkoutFiles);
                 menu.Items.Add(new MenuItem { Header = "-" });
                 menu.Items.Add(copyPath);
+                menu.Items.Add(this.CreateCopyFileNameMenuItem(selectedSingleFolder ? new[] { relativePathOfFolder } : selection.Changes.Select(c => c.Path)));
                 menu.Items.Add(copyFullPath);
                 menu.Open(sender as Control);
             }
