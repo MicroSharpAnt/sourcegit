@@ -18,7 +18,7 @@
       <Binding Path="ActiveWorkspace?.Name" Mode="OneWay"/>
     </MultiBinding>
   </v:ChromelessWindow.Title>
-  
+
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="{Binding #ThisControl.CaptionHeight}"/>
