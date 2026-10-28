@@ -195,7 +195,7 @@ namespace SourceGit.Commands
                     return Fail("InProgress");
             }
 
-            var status = await QueryAsync("status --porcelain=v1 --untracked-files=all --ignore-submodules=none");
+            var status = await QueryAsync("status --porcelain=v1 --untracked-files=all --ignore-submodules=dirty");
             if (status == null)
                 return Fail("Git");
             return status.Length == 0 || Fail("Dirty");

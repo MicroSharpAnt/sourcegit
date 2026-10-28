@@ -89,6 +89,53 @@ using (var dirty = new TestRepository())
 }
 Console.WriteLine("PASS: dirty work is rejected without changes");
 
+foreach (var scenario in new[] { "untracked", "modified", "pointer", "staged-pointer" })
+{
+    using var submodule = new TestRepository();
+    var original = submodule.Commit("original", "tracked.txt", "original");
+    var next = submodule.Commit("next", "tracked.txt", "next");
+    using var parent = new TestRepository();
+    parent.Commit("root", "root.txt", "root");
+    parent.Git("-c", "protocol.file.allow=always", "submodule", "add", submodule.Path, "child");
+    parent.Git("-C", "child", "checkout", original);
+    parent.Git("add", ".");
+    parent.Git("commit", "-m", "add submodule");
+    var first = parent.Commit("first", "first.txt", "first");
+    var last = parent.Commit("last", "last.txt", "last");
+    var file = System.IO.Path.Combine(parent.Path, "child", scenario == "untracked" ? "untracked.txt" : "tracked.txt");
+    var pointerChanged = scenario is "pointer" or "staged-pointer";
+    if (pointerChanged)
+    {
+        parent.Git("-C", "child", "checkout", next);
+        if (scenario == "staged-pointer")
+            parent.Git("add", "child");
+    }
+    else
+    {
+        File.WriteAllText(file, "keep me");
+    }
+
+    var status = parent.Git("status", "--porcelain", "--ignore-submodules=none");
+    var changes = await new QueryLocalChanges(parent.Path).GetResultAsync();
+    Check((changes.Count > 0) == pointerChanged, "local changes visibility: " + scenario);
+    var operation = new SquashCommits(parent.Path);
+    Check(await operation.PrepareAsync([first, last]) == !pointerChanged, "squash agrees with local changes: " + scenario);
+    if (pointerChanged)
+    {
+        Check(operation.Error == "SquashCommits.Error.Dirty", "reject changed submodule pointer");
+        Check(parent.Git("rev-parse", "HEAD") == last, "pointer rejection preserves HEAD");
+    }
+    else
+    {
+        var treeBefore = parent.Git("rev-parse", "HEAD^{tree}");
+        Check(await operation.SquashAsync("combined"), "squash with internal submodule changes: " + scenario);
+        Check(parent.Git("rev-parse", "HEAD^{tree}") == treeBefore, "submodule squash preserves final tree");
+        Check(File.ReadAllText(file) == "keep me", "submodule file preserved: " + scenario);
+    }
+    Check(parent.Git("status", "--porcelain", "--ignore-submodules=none") == status, "submodule status preserved: " + scenario);
+    Console.WriteLine("PASS: submodule " + scenario);
+}
+
 using (var changed = new TestRepository())
 {
     changed.Commit("root", "root.txt", "root");
